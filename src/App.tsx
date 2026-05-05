@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Toaster } from 'sonner';
-import { AnimatePresence } from 'framer-motion';
 import SplashView from './components/SplashView';
 import OnboardingView from './components/OnboardingView';
 import LandingPage from './components/LandingPage';
@@ -41,83 +40,157 @@ export default function App() {
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-  // Auth State Listener
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth Event Triggered:", event, session?.user?.id);
-      
-      if (session?.user) {
-        try {
-          // Fetch profile
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+  const syncSession = async (session: any) => {
+    console.log("syncSession called with session:", session?.user?.id);
+    if (!session?.user) {
+      console.log("No session user, clearing user state");
+      setUser(null);
+      setView((currentView) => {
+        if (currentView === 'dashboard' || currentView === 'admin' || currentView === 'otp') {
+          return 'landing';
+        }
+        return currentView;
+      });
+      return;
+    }
 
-          if (profileError) {
-            console.error("Profile fetch error in App.tsx:", profileError);
+    try {
+      console.log("Fetching profile for user:", session.user.id);
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      console.log("Profile fetch result:", { profile, error: profileError });
+
+      if (profile && !profileError) {
+        const mappedUser: User = {
+          id: profile.id,
+          name: profile.full_name || session.user.user_metadata?.full_name || 'User',
+          username: profile.username || '',
+          email: session.user.email || '',
+          phone: profile.phone || session.user.user_metadata?.phone || '',
+          role: (profile.role as 'user' | 'agent' | 'admin') || 'user',
+          walletBalance: Number(profile.wallet_balance) || 0,
+          referralPoints: profile.referral_points || 0,
+          referralCode: profile.referral_code || '',
+          joinedAt: profile.joined_at
+        };
+        console.log("Setting user from profile:", mappedUser);
+        setUser(mappedUser);
+        setView((currentView) => {
+          if (currentView === 'dashboard' || currentView === 'admin') {
+            return currentView;
           }
-
-          if (profile) {
-            const mappedUser: User = {
-              id: profile.id,
-              name: profile.full_name || session.user.user_metadata?.full_name || 'User',
-              username: profile.username || '',
-              email: session.user.email || '',
-              phone: profile.phone || session.user.user_metadata?.phone || '',
-              role: (profile.role as 'user' | 'agent' | 'admin') || 'user',
-              walletBalance: Number(profile.wallet_balance) || 0,
-              referralPoints: profile.referral_points || 0,
-              referralCode: profile.referral_code || '',
-              joinedAt: profile.joined_at
-            };
-            setUser(mappedUser);
-            
-            // Critical: Ensure view transition happens if we are on landing or auth
-            setView((currentView) => {
-              if (currentView === 'landing' || currentView === 'auth' || currentView === 'onboarding') {
-                console.log("Setting view to:", profile.role === 'admin' ? 'admin' : 'dashboard');
-                return profile.role === 'admin' ? 'admin' : 'dashboard';
-              }
-              return currentView;
-            });
-          } else {
-            // Fallback for missing profile record
-            const mappedUser: User = {
+          const newView = profile.role === 'admin' ? 'admin' : 'dashboard';
+          console.log("Setting view to:", newView);
+          return newView;
+        });
+      } else {
+        // Profile doesn't exist - create one
+        console.log("Profile not found, creating new profile for user:", session.user.id);
+        try {
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
               id: session.user.id,
-              name: session.user.user_metadata?.full_name || 'User',
-              username: '',
+              full_name: session.user.user_metadata?.full_name || 'User',
+              username: session.user.user_metadata?.username || '',
               email: session.user.email || '',
               phone: session.user.user_metadata?.phone || '',
               role: 'user',
-              walletBalance: 0,
-              referralPoints: 0,
-              referralCode: '',
-              joinedAt: new Date().toISOString()
-            };
-            setUser(mappedUser);
-            
-            setView((currentView) => {
-              if (currentView === 'landing' || currentView === 'auth' || currentView === 'onboarding') {
-                return 'dashboard';
-              }
-              return currentView;
-            });
+              wallet_balance: 0,
+              referral_points: 0,
+              referral_code: '',
+              joined_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error("Failed to create profile:", createError);
+            throw createError;
           }
-        } catch (err) {
-          console.error("Critical error in auth state change:", err);
-          toast.error("An error occurred while setting up your session.");
+
+          console.log("Created new profile:", newProfile);
+          const mappedUser: User = {
+            id: newProfile.id,
+            name: newProfile.full_name || session.user.user_metadata?.full_name || 'User',
+            username: newProfile.username || '',
+            email: session.user.email || '',
+            phone: newProfile.phone || session.user.user_metadata?.phone || '',
+            role: (newProfile.role as 'user' | 'agent' | 'admin') || 'user',
+            walletBalance: Number(newProfile.wallet_balance) || 0,
+            referralPoints: newProfile.referral_points || 0,
+            referralCode: newProfile.referral_code || '',
+            joinedAt: newProfile.joined_at
+          };
+          console.log("Setting user from new profile:", mappedUser);
+          setUser(mappedUser);
+          setView('dashboard');
+        } catch (createErr) {
+          console.error("Failed to create profile, using fallback:", createErr);
+          // Fallback if profile creation fails
+          const mappedUser: User = {
+            id: session.user.id,
+            name: session.user.user_metadata?.full_name || 'User',
+            username: '',
+            email: session.user.email || '',
+            phone: session.user.user_metadata?.phone || '',
+            role: 'user',
+            walletBalance: 0,
+            referralPoints: 0,
+            referralCode: '',
+            joinedAt: new Date().toISOString()
+          };
+          console.log("Setting user from fallback:", mappedUser);
+          setUser(mappedUser);
+          setView('dashboard');
         }
-      } else {
-        setUser(null);
-        setView((currentView) => {
-          if (currentView === 'dashboard' || currentView === 'admin' || currentView === 'otp') {
-             return 'landing';
-          }
-          return currentView;
-        });
       }
+    } catch (err) {
+      console.error("Critical error during session sync:", err);
+      // Even on error, create a basic user from session
+      const fallbackUser: User = {
+        id: session.user.id,
+        name: session.user.user_metadata?.full_name || 'User',
+        username: '',
+        email: session.user.email || '',
+        phone: session.user.user_metadata?.phone || '',
+        role: 'user',
+        walletBalance: 0,
+        referralPoints: 0,
+        referralCode: '',
+        joinedAt: new Date().toISOString()
+      };
+      console.log("Setting user from error fallback:", fallbackUser);
+      setUser(fallbackUser);
+      setView('dashboard');
+      toast.error("An error occurred while setting up your session.");
+    }
+  };
+
+  useEffect(() => {
+    const initializeSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Failed to get existing session:", error);
+        return;
+      }
+      if (data?.session?.user) {
+        console.log("Existing session found on load:", data.session.user.id);
+        await syncSession(data.session);
+      }
+    };
+
+    initializeSession();
+  }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth Event Triggered:", event, session?.user?.id);
+      await syncSession(session);
     });
 
     return () => {
@@ -162,18 +235,23 @@ export default function App() {
   }, [user?.id]);
 
   useEffect(() => {
-    if (view === 'splash') {
-      const timer = setTimeout(() => {
-        const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-        if (hasSeenOnboarding) {
-          setView('landing');
-        } else {
-          setView('onboarding');
-        }
-      }, 2500);
-      return () => clearTimeout(timer);
-    }
+    if (view !== 'splash') return;
+
+    const timer = setTimeout(() => {
+      const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+      if (hasSeenOnboarding) {
+        setView('landing');
+      } else {
+        setView('onboarding');
+      }
+    }, 2500);
+
+    return () => clearTimeout(timer);
   }, [view]);
+
+  useEffect(() => {
+    console.log("App state: view =", view, "user =", user);
+  }, [view, user]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -191,8 +269,8 @@ export default function App() {
     setView('otp');
   };
 
-  const handleLoginSuccess = (isAdmin?: boolean) => {
-    setView(isAdmin ? 'admin' : 'dashboard');
+  const handleLoginSuccess = () => {
+    setView('dashboard');
   };
 
   const handleOTPSuccess = () => {
@@ -219,7 +297,7 @@ export default function App() {
         `}</style>
         <Toaster position="top-center" richColors closeButton />
         <ScrollToTop />
-        <AnimatePresence mode="wait">
+        <>
           {view === 'splash' && <SplashView key="splash" />}
           {view === 'onboarding' && (
             <OnboardingView 
@@ -275,7 +353,7 @@ export default function App() {
               )}
             </div>
           )}
-        </AnimatePresence>
+        </>
       </div>
     </LanguageProvider>
   );

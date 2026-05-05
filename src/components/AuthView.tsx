@@ -47,14 +47,14 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
     setIsLogin(initialMode === 'login');
   }, [initialMode]);
 
-  // Failsafe to reset loading state after 15 seconds if something hangs
+  // Failsafe to reset loading state after 30 seconds if something hangs
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (loading) {
       timer = setTimeout(() => {
         setLoading(false);
         console.warn("Auth request timed out. Resetting loading state.");
-      }, 15000);
+      }, 30000);
     }
     return () => clearTimeout(timer);
   }, [loading]);
