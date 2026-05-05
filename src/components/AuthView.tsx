@@ -21,7 +21,7 @@ import { toast } from 'sonner';
 interface AuthViewProps {
   initialMode: 'login' | 'signup';
   onBack: () => void;
-  onLogin: (isAdmin?: boolean) => void;
+  onLogin: () => void;
   onSignupSuccess: (email: string) => void;
 }
 
@@ -77,13 +77,14 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resetEmail) {
+    const normalizedResetEmail = resetEmail.trim().toLowerCase();
+    if (!normalizedResetEmail) {
       toast.error("Please enter your email address");
       return;
     }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      const { error } = await supabase.auth.resetPasswordForEmail(normalizedResetEmail, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
@@ -106,13 +107,14 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
     }
     
     setLoading(true);
+    const normalizedEmail = email.trim().toLowerCase();
 
     try {
       if (isLogin) {
         // LOGIN logic
-        console.log("AuthView: Attempting sign-in for:", email.trim());
+        console.log("AuthView: Attempting sign-in for:", normalizedEmail);
         const { data, error } = await supabase.auth.signInWithPassword({ 
-          email: email.trim(), 
+          email: normalizedEmail, 
           password 
         });
         
@@ -121,15 +123,9 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
           throw error;
         }
         
-        if (data?.user) {
-          console.log("AuthView: sign-in successful user:", data.user.id);
-          toast.success(t('success_login') || 'Login successful!');
-          
-          // Small delay before calling onLogin to let the toast be seen and auth state to propagate
-          setTimeout(() => {
-            onLogin(data.user?.app_metadata?.role === 'admin');
-          }, 100);
-        }
+        console.log("AuthView: sign-in response:", data);
+        toast.success(t('success_login') || 'Login successful!');
+        onLogin();
       } else {
         // SIGNUP logic
         if (password !== confirmPassword) {
@@ -144,15 +140,15 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
           return;
         }
 
-        if (!fullName.trim() || !username.trim() || !email.trim() || !password || !phone.trim()) {
+        if (!fullName.trim() || !username.trim() || !normalizedEmail || !password || !phone.trim()) {
           toast.error("Please fill all required fields correctly.");
           setLoading(false);
           return;
         }
 
-        console.log("AuthView: Attempting signup for:", email.trim());
+        console.log("AuthView: Attempting signup for:", normalizedEmail);
         const { error } = await supabase.auth.signUp({
-          email: email.trim(),
+          email: normalizedEmail,
           password,
           options: {
             data: {
@@ -169,15 +165,13 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
         }
 
         toast.success(t('success_signup') || "Account created! Please check your email for the verification code.");
-        onSignupSuccess(email.trim());
+        onSignupSuccess(normalizedEmail);
       }
     } catch (error: any) {
       console.error("AuthView: caught error:", error);
       toast.error(handleAuthError(error));
-      setLoading(false);
     } finally {
-      // If we are still here after 2 seconds, reset loading unless a successful redirect is expected
-      // But we shouldn't reset too fast or the user might click again before the redirection
+      setLoading(false);
     }
   };
 
