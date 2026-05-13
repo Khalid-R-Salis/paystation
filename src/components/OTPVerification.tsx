@@ -7,6 +7,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from './ui/input-otp';
+import { SecureStorage } from '@/lib/security';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from 'sonner';
 import { supabase, handleAuthError } from '../lib/supabase';
@@ -56,32 +57,57 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onB
     }
   };
 
-  const handleVerify = async () => {
-    if (otp.length !== 6) {
-      toast.error("Please enter the complete 6-digit code");
-      return;
+  
+const handleVerify = async () => {
+  if (otp.length !== 6) {
+    toast.error("Please enter the complete 6-digit code");
+    return;
+  }
+
+  setIsVerifying(true);
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'signup'
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      // 1. Fetch the full profile from your 'profiles' table
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.session.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // 2. Construct the full user object
+      const fullUserData = {
+        id: profile.id,
+        name: profile.full_name || profile.name,
+        username: profile.username,
+        email: data.session.user.email,
+        phone: profile.phone,
+        role: profile.role || 'user',
+        referralCode: profile.referral_code,
+        walletBalance: profile.wallet_balance || 0,
+      };
+
+      // 3. Save to storage and notify App.tsx
+      SecureStorage.setItem('smrt_user_session', fullUserData);
+      toast.success("Account verified successfully!");
+      onSuccess(fullUserData); 
     }
-
-    setIsVerifying(true);
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'signup'
-      });
-
-      if (error) throw error;
-      
-      toast.success("Verification successful!");
-      onSuccess();
-    } catch (error: any) {
-      toast.error(handleAuthError(error));
-    } finally {
-      setIsVerifying(false);
-    }
-  };
-
-  return (
+  } catch (error: any) {
+    toast.error(handleAuthError(error));
+  } finally {
+    setIsVerifying(false);
+  }
+};
+return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}

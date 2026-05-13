@@ -4,7 +4,7 @@ import { Zap } from 'lucide-react';
 
 const SplashView = () => {
   return (
-    <div className="min-h-screen bg-green-600 flex flex-col items-center justify-center p-6 fixed inset-0 z-[100]">
+    <div className="min-h-screen bg-[#084328] flex flex-col items-center justify-center p-6 fixed inset-0 z-[100]">
       <motion.div 
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
