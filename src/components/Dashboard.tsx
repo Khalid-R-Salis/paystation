@@ -237,7 +237,7 @@ const HomeView = ({
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <Card className="bg-[#084328] border-none text-white shadow-2xl shadow-green-600/20 overflow-hidden relative rounded-[2.5rem]">
+      {/* <Card className="bg-[#084328] border-none text-white shadow-2xl shadow-green-600/20 overflow-hidden relative rounded-[2.5rem]">
         <div className="absolute top-0 right-0 p-8 opacity-10">
           <Zap size={180} className="fill-white" />
         </div>
@@ -258,8 +258,37 @@ const HomeView = ({
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
+<Card className="bg-[#084328] border-none text-white shadow-2xl shadow-green-600/20 overflow-hidden relative rounded-[2.5rem]">
+  <div className="absolute top-0 right-0 p-8 opacity-10">
+    <Zap size={180} className="fill-white" />
+  </div>
+  <CardContent className="p-8 md:p-10 relative z-10">
+    <div className="flex justify-between items-start mb-10">
+      <div>
+        <p className="text-green-50/80 text-base md:text-lg font-bold mb-2">{t('wallet_balance')}</p>
+        {/* Using direct ₦ and tabular-nums to prevent "jitter" when numbers update */}
+        <h3 className="text-4xl md:text-5xl font-black tracking-tight tabular-nums">
+          ₦{(user.walletBalance || 0).toLocaleString()}
+        </h3>
+      </div>
+      <Badge className="bg-white/20 backdrop-blur-md text-white border-none py-1.5 px-4 rounded-full font-bold">
+        {(user.role || 'user').toUpperCase()}
+      </Badge>
+    </div>
+    
+    <div className="flex gap-4">
+      <Button 
+        onClick={onOpenFunding} 
+        className="bg-white text-[#084328] hover:bg-slate-100 flex-1 h-14 md:h-16 rounded-2xl font-black text-lg md:text-xl shadow-xl shadow-green-900/10 border-none transition-all active:scale-[0.98]"
+      >
+        <Plus className="mr-2" size={20} strokeWidth={3} /> {t('add_money')}
+      </Button>
+    </div>
+  </CardContent>
+</Card>
+      
       <div className="space-y-6">
         <div className="flex items-center justify-between px-1">
           <h4 className="font-black text-slate-900 dark:text-white text-xl md:text-2xl">{t('quick_services')}</h4>

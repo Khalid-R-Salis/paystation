@@ -124,24 +124,51 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
   };
 
   const handleProcess = async () => {
-    if (Number(formData.amount) > user.walletBalance && !['cash', 'flight'].includes(type)) {
-      toast.error("Insufficient wallet balance. Please fund your wallet.");
-      return;
+  const amountToDeduct = Number(formData.amount);
+  
+  // 1. Client-side check
+  if (amountToDeduct > user.walletBalance && !['cash', 'flight'].includes(type)) {
+    toast.error("Insufficient wallet balance.");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const { supabase } = await import('../lib/supabase');
+
+    if (!['cash', 'flight'].includes(type)) {
+      // 2. Atomic Deduction via RPC
+      // Create a function in Supabase named 'deduct_wallet_balance'
+      const { data, error } = await supabase.rpc('deduct_wallet_balance', {
+        user_id: user.id,
+        amount: amountToDeduct
+      });
+
+      if (error) throw error;
+      if (!data.success) throw new Error(data.message || "Insufficient funds");
     }
 
-    setLoading(true);
-    try {
-      // Simulate transaction processing
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      toast.success("Transaction Successful! Details have been sent to your email.");
-      onClose();
-    } catch (err: any) {
-      toast.error(err.message || "Transaction failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 3. Log the transaction in a 'transactions' table
+    await supabase.from('transactions').insert({
+      user_id: user.id,
+      type: type,
+      amount: amountToDeduct,
+      status: 'completed',
+      details: formData
+    });
 
+    toast.success("Transaction Successful!");
+    
+
+    onClose();
+    window.location.reload(); // Keep for now if parent state isn't lifting
+  } catch (err: any) {
+    toast.error(err.message || "Transaction failed.");
+  } finally {
+    setLoading(false);
+  }
+};
+  
   const renderConfirmation = () => (
     <div className="space-y-6 animate-in zoom-in-95 duration-300">
        <div className="bg-green-50 dark:bg-green-950/30 p-6 rounded-3xl border border-green-100 dark:border-green-900/50 shadow-sm">
