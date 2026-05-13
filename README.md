@@ -87,4 +87,4 @@ The project includes dark mode support through Tailwind's `dark:` classes and CS
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Radix UI](https://www.radix-ui.com/)
 
-Built with ❤️ by KhalidTech Solutions
+<!-- TESTING PREVIEW -->
