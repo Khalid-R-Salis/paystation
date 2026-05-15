@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, ChevronLeft, Mail, Lock, User, Phone, Chrome, Github, CheckCircle2 } from 'lucide-react';
+import { Zap, ChevronLeft, Mail, Lock, User, Phone, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
@@ -45,6 +45,8 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     setIsLogin(initialMode === 'login');
@@ -303,23 +305,44 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </button>
                   )}
                 </div>
-                <div className="relative">
+                {/* <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                   <Input 
                     type="password" 
-                    placeholder="••••••••" 
+                    placeholder="•••••••1" 
                     className="pl-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-xl focus:ring-[#084328]" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required 
                   />
-                </div>
+                </div> */}
+              
+              <div className="relative">
+  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+  <Input 
+    type={showPassword ? "text" : "password"} 
+    placeholder="••••••••" 
+    className="pl-10 pr-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-xl focus:ring-[#084328]" 
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required 
+  />
+  {password.length > 0 && (
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  )}
+</div>
               </div>
 
               {!isLogin && (
                 <div className="space-y-2">
                   <Label className="text-slate-700 dark:text-slate-200 font-bold ml-1">{t('auth_confirm_password')}</Label>
-                  <div className="relative">
+                  {/* <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <Input 
                       type="password" 
@@ -329,7 +352,29 @@ const handleSubmit = async (e: React.FormEvent) => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required={!isLogin}
                     />
-                  </div>
+                  </div> */}
+               
+               <div className="relative">
+  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+  <Input 
+    type={showConfirmPassword ? "text" : "password"} 
+    placeholder="••••••••" 
+    className="pl-10 pr-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-xl focus:ring-[#084328]" 
+    value={confirmPassword}
+    onChange={(e) => setConfirmPassword(e.target.value)}
+    required={!isLogin}
+  />
+  {confirmPassword.length > 0 && (
+    <button
+      type="button"
+      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+    >
+      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  )}
+</div>
+               
                 </div>
               )}
 
@@ -358,19 +403,6 @@ const handleSubmit = async (e: React.FormEvent) => {
               </Button>
             </form>
 
-            <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-100 dark:border-slate-800" /></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-slate-900 px-2 text-slate-400 font-bold tracking-widest">{t('auth_or_continue')}</span></div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Button onClick={() => handleSocialLogin('google')} variant="outline" disabled={loading} className="h-12 rounded-xl dark:text-white font-bold">
-                <Chrome className="mr-2 text-red-500" size={18} /> Google
-              </Button>
-              <Button onClick={() => handleSocialLogin('github')} variant="outline" disabled={loading} className="h-12 rounded-xl dark:text-white font-bold">
-                <Github className="mr-2" size={18} /> GitHub
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
