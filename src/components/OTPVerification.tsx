@@ -14,11 +14,12 @@ import { supabase, handleAuthError } from '../lib/supabase';
 
 interface OTPVerificationProps {
   email: string;
-  onSuccess: (userData?: any) => void; // Added optional userData parameter
+  onSuccess: (userData?: any) => void;
   onBack: () => void;
+  setView: (view: any) => void;  
+  authMode: string;               
 }
-
-const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onBack }) => {
+const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onBack, setView, authMode }) => {
   const { t } = useLanguage();
   const [otp, setOtp] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -56,57 +57,27 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onB
       toast.error(handleAuthError(error));
     }
   };
-
-  
 const handleVerify = async () => {
-  if (otp.length !== 6) {
-    toast.error("Please enter the complete 6-digit code");
-    return;
-  }
-
   setIsVerifying(true);
+  // LOG THIS: If this says 'signup' during a reset, we found the bug!
+  console.log("Current Auth Mode:", authMode); 
   try {
     const { data, error } = await supabase.auth.verifyOtp({
-      email,
+      email: email.toLowerCase().trim(), // Clean the email string
       token: otp,
-      type: 'signup'
+      type: authMode === 'reset-otp' ? 'recovery' : 'signup' 
     });
 
     if (error) throw error;
-
-    if (data.session) {
-      // 1. Fetch the full profile from your 'profiles' table
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.session.user.id)
-        .single();
-
-      if (profileError) throw profileError;
-
-      // 2. Construct the full user object
-      const fullUserData = {
-        id: profile.id,
-        name: profile.full_name || profile.name,
-        username: profile.username,
-        email: data.session.user.email,
-        phone: profile.phone,
-        role: profile.role || 'user',
-        referralCode: profile.referral_code,
-        walletBalance: profile.wallet_balance || 0,
-      };
-
-      // 3. Save to storage and notify App.tsx
-      SecureStorage.setItem('smrt_user_session', fullUserData);
-      toast.success("Account verified successfully!");
-      onSuccess(fullUserData); 
-    }
+    onSuccess(data.user || data.session?.user || null);
+    // onSuccess(data.session?.user);
   } catch (error: any) {
-    toast.error(handleAuthError(error));
+    toast.error("Invalid code. Please try again.");
   } finally {
     setIsVerifying(false);
   }
 };
+
 return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 transition-colors duration-300">
       <motion.div

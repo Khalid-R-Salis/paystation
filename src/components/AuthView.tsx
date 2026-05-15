@@ -21,11 +21,13 @@ import { toast } from 'sonner';
 interface AuthViewProps {
   initialMode: 'login' | 'signup';
   onBack: () => void;
-  onLogin: (userData: any) => void; // Updated to accept user data
+  onLogin: (userData: any) => void;
   onSignupSuccess: (email: string) => void;
+  setView: (view: any) => void;
+  setAuthMode: (mode: any) => void; 
+  authMode: string;
 }
-
-const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSignupSuccess }) => {
+const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSignupSuccess, setView, setAuthMode }) => {
   const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [loading, setLoading] = useState(false);
@@ -38,6 +40,7 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -46,6 +49,31 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
     setIsLogin(initialMode === 'login');
   }, [initialMode]);
 
+const handleForgotPassword = async (email: string) => {
+  if (!email) {
+    toast.error("Please enter your email address");
+    return;
+  }
+
+  setLoading(true); // Changed from setIsLoading to setLoading
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+
+    if (error) throw error;
+
+    setPendingEmail(email); 
+    setAuthMode('reset-otp'); 
+    setView('otp');
+    toast.success("Reset code sent to your email!");
+  } catch (error: any) {
+    toast.error(handleAuthError(error));
+  } finally {
+    setLoading(false); // Changed from setIsLoading to setLoading
+  }
+};
+  
   const handleSocialLogin = async (provider: 'google' | 'github') => {
     try {
       setLoading(true);
@@ -375,9 +403,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                 />
               </div>
             </div>
-            <Button className="w-full h-12 bg-[#084328] hover:bg-[#063a23] text-white font-bold rounded-xl">
-              Send Reset Link
-            </Button>
+            <Button 
+  onClick={() => handleForgotPassword(resetEmail)} 
+  className="w-full h-12 bg-[#084328] hover:bg-[#063a23] text-white font-bold rounded-xl"
+>
+  {loading ? "Sending..." : "Send Reset Link"}
+</Button>
           </div>
         </DialogContent>
       </Dialog>

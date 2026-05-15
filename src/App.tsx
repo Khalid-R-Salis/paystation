@@ -12,13 +12,14 @@ import { ScrollToTop } from './components/ScrollToTop';
 import { User } from './types';
 import { supabase } from './lib/supabase';
 import { SecureStorage } from './lib/security';
+import NewPasswordView from './components/NewPasswordView';
 
-type ViewState = 'splash' | 'onboarding' | 'landing' | 'auth' | 'otp' | 'dashboard' | 'admin';
+type ViewState = 'splash' | 'onboarding' | 'landing' | 'auth' | 'otp' | 'dashboard' | 'admin' | 'reset-password';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('splash');
   const [user, setUser] = useState<User | null>(null);
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [authMode, setAuthMode] = useState<'login' | 'signup' | 'reset-otp'>('login');
   const [pendingEmail, setPendingEmail] = useState('');
   const [isInitializing, setIsInitializing] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -88,6 +89,15 @@ export default function App() {
         
         {(() => {
           switch (view) {
+case 'reset-password':
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
+      <NewPasswordView 
+        email={pendingEmail} 
+        onSuccess={() => setView('auth')} 
+      />
+    </div>
+  );
             case 'onboarding':
               return (
                 <OnboardingView 
@@ -110,37 +120,51 @@ export default function App() {
                 />
               );
 
-            case 'auth':
-              return (
-                <AuthView 
-                  key="auth" 
-                  initialMode={authMode} 
-                  onBack={() => setView('landing')} 
-                  onLogin={(userData) => {
-                    SecureStorage.setItem('smrt_user_session', userData);
-                    setUser(userData);
-                    setView(userData.role === 'admin' ? 'admin' : 'dashboard');
-                  }} 
-                  onSignupSuccess={(email) => { 
-                    setPendingEmail(email); 
-                    setView('otp'); 
-                  }}
-                />
-              );
+          case 'auth':
+  return (
+    <AuthView 
+      key="auth" 
+      initialMode={authMode === 'reset-otp' ? 'login' : authMode} // Fallback logic
+      authMode={authMode} // PASS THIS
+      setView={setView}   // PASS THIS
+      setAuthMode={setAuthMode} // PASS THIS
+      onBack={() => setView('landing')} 
+      onLogin={(userData) => {
+        SecureStorage.setItem('smrt_user_session', userData);
+        setUser(userData);
+        setView(userData.role === 'admin' ? 'admin' : 'dashboard');
+      }} 
+      onSignupSuccess={(email) => { 
+        setPendingEmail(email); 
+        setView('otp'); 
+      }}
+    />
+  );
 
 case 'otp':
   return (
     <OTPVerification
       key="otp"
       email={pendingEmail}
+      authMode={authMode} 
+      setView={setView}   
       onBack={() => setView('auth')}
       onSuccess={(userData) => { 
-        // This now matches the interface we updated above
+        // 1. If we are resetting a password, go to the New Password screen
+        if (authMode === 'reset-otp') {
+          setView('reset-password');
+          return;
+        }
+
+        // 2. Otherwise, handle standard signup/login session
         if (userData) {
           SecureStorage.setItem('smrt_user_session', userData);
           setUser(userData);
+          setView(userData.role === 'admin' ? 'admin' : 'dashboard');
+        } else {
+          // Fallback if no user data returned during signup
+          setView('auth');
         }
-        setView(userData?.role === 'admin' ? 'admin' : 'dashboard');
       }} 
     />
   );
