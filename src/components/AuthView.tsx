@@ -173,6 +173,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       if (data?.user) {
         toast.success(t('success_signup') || "Verification code sent to your email!");
+        setAuthMode('signup');
         onSignupSuccess(normalizedEmail);
       }
     }
@@ -377,7 +378,10 @@ const handleSubmit = async (e: React.FormEvent) => {
           {isLogin ? t('auth_no_account') : t('auth_already_member')}{' '}
           <button 
             type="button"
-            onClick={() => setIsLogin(!isLogin)} 
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setAuthMode(isLogin ? 'signup' : 'login');
+            }} 
             className="text-[#084328] font-black hover:underline ml-1"
           >
             {isLogin ? t('auth_sign_up') : t('auth_log_in')}

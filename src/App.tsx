@@ -144,6 +144,7 @@ case 'reset-password':
         setView(userData.role === 'admin' ? 'admin' : 'dashboard');
       }} 
       onSignupSuccess={(email) => { 
+        setAuthMode('signup');
         setPendingEmail(email); 
         setView('otp'); 
       }}
@@ -187,22 +188,31 @@ case 'otp':
           await new Promise((res) => setTimeout(res, 500));
         }
 
+        const metadata = (userData as any)?.user_metadata || {};
         const userSession = profile
           ? {
               id: profile.id,
               name: profile.full_name,
               username: profile.username,
-              email: userData.email || profile.email,
+              email: userData.email || profile.email || metadata.email || '',
               phone: profile.phone,
-              role: profile.role || 'user',
+              role: profile.role || (metadata.role as string) || 'user',
               walletBalance: profile.wallet_balance || 0,
               referralPoints: profile.referral_points || 0,
               referralCode: profile.referral_code || '',
+              joinedAt: profile.joined_at || new Date().toISOString(),
             }
           : {
               id: userData.id,
-              email: userData.email,
-              role: 'user',
+              name: metadata.full_name || metadata.fullName || metadata.name || '',
+              username: metadata.username || '',
+              email: userData.email || metadata.email || '',
+              phone: metadata.phone || '',
+              role: (metadata.role as string) || 'user',
+              walletBalance: 0,
+              referralPoints: 0,
+              referralCode: '',
+              joinedAt: new Date().toISOString(),
             };
 
         SecureStorage.setItem('smrt_user_session', userSession);

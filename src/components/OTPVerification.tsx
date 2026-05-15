@@ -21,6 +21,10 @@ interface OTPVerificationProps {
 }
 const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onBack, setView, authMode }) => {
   const { t } = useLanguage();
+  const isReset = authMode === 'reset-otp';
+  const titleText = isReset ? 'Reset Password' : 'Verify Your Account';
+  const descText = 'We have sent a 6-digit verification code to your email. Please enter it below.';
+  const buttonText = isReset ? 'Complete Password Reset' : 'Verify & Complete Signup';
   const [otp, setOtp] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
@@ -34,7 +38,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onB
 
   // Failsafe to reset verifying state
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (isVerifying) {
       timer = setTimeout(() => {
         setIsVerifying(false);
@@ -46,11 +50,18 @@ const OTPVerification: React.FC<OTPVerificationProps> = ({ email, onSuccess, onB
   const handleResend = async () => {
     if (resendTimer > 0) return;
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email,
-      });
-      if (error) throw error;
+      if (isReset) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.resend({
+          type: 'signup',
+          email,
+        });
+        if (error) throw error;
+      }
       setResendTimer(60);
       toast.success("Verification code resent!");
     } catch (error: any) {
@@ -90,10 +101,8 @@ return (
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white">{t('otp_title')}</h2>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">
-            {t('otp_desc')}
-          </p>
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white">{titleText}</h2>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">{descText}</p>
           <p className="text-[#084328] font-bold">{email}</p>
         </div>
 
@@ -138,7 +147,7 @@ return (
             disabled={isVerifying || otp.length < 6} 
             className="w-full h-16 bg-[#084328] hover:bg-[#063a23] text-white text-xl font-black rounded-2xl shadow-xl shadow-green-900/10 transition-all active:scale-95"
           >
-            {isVerifying ? "Verifying..." : t('otp_verify_btn')}
+            {isVerifying ? "Verifying..." : buttonText}
             {!isVerifying && <ArrowRight className="ml-2" size={20} strokeWidth={3} />}
           </Button>
 
