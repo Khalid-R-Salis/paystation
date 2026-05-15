@@ -245,7 +245,7 @@ const HomeView = ({
           <div className="flex justify-between items-start mb-10">
             <div>
               <p className="text-green-50/80 text-base md:text-lg font-bold mb-2">{t('wallet_balance')}</p>
-              <h3 className="text-4xl md:text-5xl font-black tracking-tight">\u20a6{(user.walletBalance || 0).toLocaleString()}</h3>
+              <h3 className="text-4xl md:text-5xl font-black tracking-tight">6{(user.walletBalance || 0).toLocaleString()}</h3>
             </div>
             <Badge className="bg-white/20 backdrop-blur-md text-white border-none py-1.5 px-4 rounded-full font-bold">
               {(user.role || 'user').toUpperCase()}
@@ -320,7 +320,7 @@ const HomeView = ({
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">\u20a6{(500 * i).toLocaleString()}</p>
+                    <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">6{(500 * i).toLocaleString()}</p>
                     <p className="text-[10px] font-black uppercase text-[#084328] bg-[#084328]/10 px-2 py-0.5 rounded-full inline-block">{t('success')}</p>
                   </div>
                 </div>
@@ -445,7 +445,7 @@ const TransactionsView = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">\u20a6{tx.amount.toLocaleString()}</p>
+                <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">6{tx.amount.toLocaleString()}</p>
                 <Badge variant="outline" className="border-green-600/20 text-green-600 font-black px-3 py-1 bg-green-600/5 uppercase">{t('success')}</Badge>
               </div>
             </div>
@@ -486,7 +486,7 @@ const ProfileView = ({ user, onEditProfile, onUpgradeAgent }: { user: UserType, 
         <ProfileItem label={t('auth_username')} value={user.username || 'Not set'} />
         <ProfileItem label={t('prof_phone')} value={user.phone || 'Not set'} />
         <ProfileItem label={t('prof_ref')} value={user.referralCode || 'None'} />
-        <ProfileItem label={t('prof_earnings')} value={`\u20a6${((user.walletBalance || 0) * 0.2).toLocaleString()}`} />
+        <ProfileItem label={t('prof_earnings')} value={`6${((user.walletBalance || 0) * 0.2).toLocaleString()}`} />
       </div>
 
       <div className="pt-6 space-y-4">

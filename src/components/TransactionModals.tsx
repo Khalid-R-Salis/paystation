@@ -194,7 +194,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 return null;
              })}
              <div className="pt-3 mt-3 border-t border-green-100 dark:border-green-900/50">
-                <SummaryItem label="TOTAL PAYABLE" value={`\u20a6${Number(formData.amount || 0).toLocaleString()}`} highlight />
+                <SummaryItem label="TOTAL PAYABLE" value={`6${Number(formData.amount || 0).toLocaleString()}`} highlight />
              </div>
           </div>
        </div>
@@ -238,7 +238,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 />
               </div>
               <div className="space-y-2">
-                <Label className="font-black text-xs uppercase text-slate-400 ml-1">Amount (\u20a6)</Label>
+                <Label className="font-black text-xs uppercase text-slate-400 ml-1">Amount (6)</Label>
                 <Input 
                   type="number" 
                   placeholder="Enter amount" 
@@ -282,7 +282,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
                     {formData.network && DATA_PLANS[formData.network]?.map((plan: any) => (
-                      <SelectItem key={plan.id} value={plan.id} className="rounded-xl font-bold p-3">{plan.name} - \u20a6{plan.price} ({plan.validity})</SelectItem>
+                      <SelectItem key={plan.id} value={plan.id} className="rounded-xl font-bold p-3">{plan.name} - 6{plan.price} ({plan.validity})</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -337,7 +337,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 />
               </div>
               <div className="space-y-2">
-                <Label className="font-black text-xs uppercase text-slate-400 ml-1">Payment Amount (\u20a6)</Label>
+                <Label className="font-black text-xs uppercase text-slate-400 ml-1">Payment Amount (6)</Label>
                 <Input 
                   type="number" 
                   placeholder="Min. 1000" 
@@ -408,7 +408,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                             <p className="font-black text-slate-900 dark:text-white text-sm">{pkg.name}</p>
                             <p className="text-[10px] font-bold text-slate-400 uppercase">Subscription Plan</p>
                          </div>
-                         <p className="font-black text-[#084328]">\u20a6{pkg.price.toLocaleString()}</p>
+                         <p className="font-black text-[#084328]">6{pkg.price.toLocaleString()}</p>
                       </button>
                    ))}
                 </div>
@@ -429,7 +429,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                     <SelectValue placeholder="Select Provider" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    {EXAM_PROVIDERS.map((p) => <SelectItem key={p.id} value={p.id} className="rounded-xl font-bold p-3">{p.name} - \u20a6{p.price}</SelectItem>)}
+                    {EXAM_PROVIDERS.map((p) => <SelectItem key={p.id} value={p.id} className="rounded-xl font-bold p-3">{p.name} - 6{p.price}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -450,7 +450,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
               {formData.amount > 0 && (
                 <div className="bg-[#084328]/5 p-5 rounded-2xl flex justify-between items-center border border-[#084328]/10 shadow-sm">
                    <span className="font-bold text-slate-600 dark:text-slate-400">Total Cost:</span>
-                   <span className="text-2xl font-black text-[#084328] dark:text-green-400">\u20a6{formData.amount.toLocaleString()}</span>
+                   <span className="text-2xl font-black text-[#084328] dark:text-green-400">6{formData.amount.toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -462,7 +462,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
             <div className="bg-orange-50 dark:bg-orange-950/20 p-5 rounded-3xl border border-orange-100 dark:border-orange-900/30 flex gap-4 shadow-sm">
                <Zap className="text-orange-500 shrink-0" size={24} />
                <p className="text-[10px] font-black text-orange-800 dark:text-orange-300 uppercase leading-relaxed">
-                 Airtime to Cash fee is 20%. Receive \u20a6800 for every \u20a61,000 sent. Funds settled instantly to wallet.
+                 Airtime to Cash fee is 20%. Receive 6800 for every 61,000 sent. Funds settled instantly to wallet.
                </p>
             </div>
             <div className="space-y-4">
@@ -479,7 +479,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
               </div>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="font-black text-xs uppercase text-slate-400 ml-1">Airtime Amount (\u20a6)</Label>
+                    <Label className="font-black text-xs uppercase text-slate-400 ml-1">Airtime Amount (6)</Label>
                     <Input 
                       type="number" 
                       placeholder="Min. 500" 
@@ -493,7 +493,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                  <div className="space-y-2">
                     <Label className="font-black text-xs uppercase text-slate-400 ml-1">Wallet Payout</Label>
                     <div className="h-14 rounded-2xl bg-green-50 dark:bg-green-950/20 flex items-center px-4 font-black text-[#084328] dark:text-green-400 border border-green-100/50 dark:border-green-900/50">
-                       \u20a6{formData.receive?.toLocaleString() || 0}
+                       6{formData.receive?.toLocaleString() || 0}
                     </div>
                  </div>
               </div>
@@ -547,7 +547,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 ></textarea>
                 <div className="flex justify-between mt-1 px-1">
                    <span className="text-[10px] font-black uppercase text-slate-400">{formData.chars || 0} Characters ({formData.pages || 1} page)</span>
-                   <span className="text-xs font-black text-[#084328] dark:text-green-400">Estimated Cost: \u20a6{formData.amount || 0}</span>
+                   <span className="text-xs font-black text-[#084328] dark:text-green-400">Estimated Cost: 6{formData.amount || 0}</span>
                 </div>
               </div>
             </div>
