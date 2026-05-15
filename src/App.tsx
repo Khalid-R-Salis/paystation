@@ -128,16 +128,19 @@ export default function App() {
                 />
               );
 
-        case 'otp':
+case 'otp':
   return (
     <OTPVerification
       key="otp"
       email={pendingEmail}
       onBack={() => setView('auth')}
-      onSuccess={(fullUserData) => { 
-        // fullUserData now contains the profile fields from the DB
-        setUser(fullUserData); 
-        setView('dashboard'); 
+      onSuccess={(userData) => { 
+        // This now matches the interface we updated above
+        if (userData) {
+          SecureStorage.setItem('smrt_user_session', userData);
+          setUser(userData);
+        }
+        setView(userData?.role === 'admin' ? 'admin' : 'dashboard');
       }} 
     />
   );

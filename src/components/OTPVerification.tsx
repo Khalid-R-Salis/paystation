@@ -14,7 +14,7 @@ import { supabase, handleAuthError } from '../lib/supabase';
 
 interface OTPVerificationProps {
   email: string;
-  onSuccess: () => void;
+  onSuccess: (userData?: any) => void; // Added optional userData parameter
   onBack: () => void;
 }
 
