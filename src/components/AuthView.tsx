@@ -23,11 +23,12 @@ interface AuthViewProps {
   onBack: () => void;
   onLogin: (userData: any) => void;
   onSignupSuccess: (email: string) => void;
+  onForgotPassword: (email: string) => void;
   setView: (view: any) => void;
   setAuthMode: (mode: any) => void; 
   authMode: string;
 }
-const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSignupSuccess, setView, setAuthMode }) => {
+const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSignupSuccess, onForgotPassword, setView, setAuthMode }) => {
   const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [loading, setLoading] = useState(false);
@@ -40,7 +41,7 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [pendingEmail, setPendingEmail] = useState('');
+  
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -63,9 +64,13 @@ const handleForgotPassword = async (email: string) => {
 
     if (error) throw error;
 
-    setPendingEmail(email); 
-    setAuthMode('reset-otp'); 
-    setView('otp');
+    // Lift pending email to parent and switch to reset OTP mode
+    setAuthMode('reset-otp');
+    // Notify parent to store pending email and navigate to otp view
+    // `onForgotPassword` is provided by the parent App component
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    onForgotPassword(email);
     toast.success("Reset code sent to your email!");
   } catch (error: any) {
     toast.error(handleAuthError(error));

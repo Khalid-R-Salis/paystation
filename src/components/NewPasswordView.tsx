@@ -5,7 +5,7 @@ import { Input } from './ui/input';
 import { supabase } from '../lib/supabase';
 import { toast } from 'sonner';
 
-const NewPasswordView = ({ email, onSuccess }: { email: string; onSuccess: () => void }) => {
+const NewPasswordView = ({ email, onSuccess }: { email: string; onSuccess: (userData?: any) => void }) => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
@@ -20,7 +20,46 @@ const NewPasswordView = ({ email, onSuccess }: { email: string; onSuccess: () =>
       if (error) throw error;
 
       toast.success("Password updated successfully!");
-      onSuccess(); // Takes user back to Login
+
+      // Attempt to sign the user in with the new password
+      try {
+        const normalizedEmail = email.trim().toLowerCase();
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password,
+        });
+
+        if (signInError) throw signInError;
+
+        // Fetch profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', signInData.user?.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        const userData = {
+          id: profile.id,
+          name: profile.full_name,
+          username: profile.username,
+          email: signInData.user?.email,
+          phone: profile.phone,
+          role: profile.role || 'user',
+          walletBalance: profile.wallet_balance || 0,
+          referralPoints: profile.referral_points || 0,
+          referralCode: profile.referral_code || '',
+        };
+
+        onSuccess(userData);
+        return;
+      } catch (signInErr: any) {
+        // If sign-in fails, fall back to navigating to auth screen
+        toast.error("Password updated but automatic login failed. Please sign in manually.");
+        onSuccess();
+        return;
+      }
     } catch (error: any) {
       toast.error(error.message);
     } finally {

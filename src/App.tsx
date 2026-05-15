@@ -94,7 +94,15 @@ case 'reset-password':
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
       <NewPasswordView 
         email={pendingEmail} 
-        onSuccess={() => setView('auth')} 
+        onSuccess={(userData?: any) => {
+          if (userData) {
+            SecureStorage.setItem('smrt_user_session', userData);
+            setUser(userData);
+            setView(userData.role === 'admin' ? 'admin' : 'dashboard');
+          } else {
+            setView('auth');
+          }
+        }}
       />
     </div>
   );
@@ -128,6 +136,7 @@ case 'reset-password':
       authMode={authMode} // PASS THIS
       setView={setView}   // PASS THIS
       setAuthMode={setAuthMode} // PASS THIS
+              onForgotPassword={(email: string) => { setPendingEmail(email); setView('otp'); }}
       onBack={() => setView('landing')} 
       onLogin={(userData) => {
         SecureStorage.setItem('smrt_user_session', userData);
@@ -149,7 +158,7 @@ case 'otp':
       authMode={authMode} 
       setView={setView}   
       onBack={() => setView('auth')}
-      onSuccess={(userData) => { 
+      onSuccess={async (userData) => {
         // 1. If we are resetting a password, go to the New Password screen
         if (authMode === 'reset-otp') {
           setView('reset-password');
@@ -157,15 +166,49 @@ case 'otp':
         }
 
         // 2. Otherwise, handle standard signup/login session
-        if (userData) {
-          SecureStorage.setItem('smrt_user_session', userData);
-          setUser(userData);
-          setView(userData.role === 'admin' ? 'admin' : 'dashboard');
-        } else {
-          // Fallback if no user data returned during signup
+        if (!userData) {
           setView('auth');
+          return;
         }
-      }} 
+
+        // Attempt to fetch the user's profile (some systems create profile rows asynchronously).
+        let profile = null;
+        for (let i = 0; i < 5; i++) {
+          const { data: p, error: pErr } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userData.id)
+            .single();
+          if (!pErr && p) {
+            profile = p;
+            break;
+          }
+          // wait 500ms before retrying
+          await new Promise((res) => setTimeout(res, 500));
+        }
+
+        const userSession = profile
+          ? {
+              id: profile.id,
+              name: profile.full_name,
+              username: profile.username,
+              email: userData.email || profile.email,
+              phone: profile.phone,
+              role: profile.role || 'user',
+              walletBalance: profile.wallet_balance || 0,
+              referralPoints: profile.referral_points || 0,
+              referralCode: profile.referral_code || '',
+            }
+          : {
+              id: userData.id,
+              email: userData.email,
+              role: 'user',
+            };
+
+        SecureStorage.setItem('smrt_user_session', userSession);
+        setUser(userSession);
+        setView(userSession.role === 'admin' ? 'admin' : 'dashboard');
+      }}
     />
   );
             case 'dashboard':
