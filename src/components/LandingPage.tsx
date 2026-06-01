@@ -66,10 +66,10 @@ const pricingData = {
 };
 
 const networkLogos = {
-  MTN: "img/mtnLogo.png",
-  AIRTEL: "img/airtelLogo.png",
-  GLO: "img/gloLogo.png",
-  "9 MOBILE": "img/ninemobileLogo.png"
+  MTN: "mtnLogo.png",
+  AIRTEL: "airtelLogo.png",
+  GLO: "gloLogo.png",
+  "9 MOBILE": "ninemobileLogo.png"
 };
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode, toggleTheme }) => {
   const { t, setLanguage, language } = useLanguage();
@@ -172,13 +172,9 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
   setTimeout(() => {
     const element = document.getElementById(id);
     if (element) {
-      // 1. Get the element's position relative to the entire page
+     
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      
-      // 2. Subtract the height of your fixed navbar (adjust 90 to match your header height)
       const offsetPosition = elementPosition - 90;
-
-      // 3. Smoothly scroll to the calculated position
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
@@ -392,25 +388,7 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
             <p className="text-slate-500 dark:text-slate-400 text-xl font-medium max-w-2xl mx-auto">{t('why_desc')}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* {features.map((feature, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white dark:bg-slate-900/50 p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all border border-slate-100 dark:border-slate-800 group cursor-default"
-              >
-                <div className={`w-16 h-16 ${feature.color} rounded-2xl flex items-center justify-center mb-8 text-white shadow-lg shadow-current/20 group-hover:scale-110 transition-transform`}>
-                  <feature.icon size={32} />
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">{feature.title}</h3>
-                <p className="text-slate-500 dark:text-slate-400 font-medium mb-8 leading-relaxed">{feature.description}</p>
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-500">
-                  <img src={feature.image} alt={feature.title} className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-700" />
-                </div>
-              </motion.div>
-            ))} */}
+           
             {features.map((feature, idx) => (
   <motion.div
     key={idx}
@@ -471,14 +449,6 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
                         alt={network} 
                         className="w-6 h-6 rounded-md object-cover border border-slate-200/50"
                       />
-                      {/* <img
-  src={networkLogos[network]}
-  alt={network}
-  className="w-8 h-8 object-contain"
-onError={(e) => {
-  (e.target as HTMLImageElement).src = "/img/default.png";
-}}
-/> */}
                       {network}
                    </div>
                 </button>
