@@ -646,7 +646,7 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
               <Button className="w-full sm:w-auto h-16 px-12 text-xl font-black bg-[#084328] hover:bg-[#063a23] text-white rounded-2xl shadow-2xl shadow-green-900/40" onClick={onSignUp}>
                 {t('nav_get_started')}
               </Button>
-              <Button variant="ghost" className="w-full sm:w-auto h-16 px-12 text-xl font-black text-white hover:bg-white/10 rounded-2xl" onClick={onLogin}>
+              <Button variant="ghost" className="w-full sm:w-auto h-16 px-12 text-xl font-black text-white hover:bg-white/100 rounded-2xl" onClick={onLogin}>
                 {t('nav_login')}
               </Button>
             </div>
