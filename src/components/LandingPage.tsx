@@ -16,6 +16,9 @@ import {
 } from './ui/dropdown-menu';
 import { toast } from 'sonner';
 
+// img imports
+import heroImg from '../../img/hero-img.png';
+
 interface LandingPageProps {
   onLogin: () => void;
   onSignUp: () => void;
@@ -57,16 +60,16 @@ const pricingData = {
 };
 
 const networkLogos = {
-  MTN: "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/mtn-logo-new-8f041ca2-1776680499445.webp",
-  AIRTEL: "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/airtel-logo-new-b8b1d852-1776680498793.webp",
-  GLO: "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/glo-logo-new-f9404ab2-1776680499878.webp",
-  '9 MOBILE': "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/9mobile-logo-new-51dafa7b-1776680501776.webp"
+  MTN: "img/mtnLogo.png",
+  AIRTEL: "img/airtelLogo.png",
+  GLO: "img/gloLogo.png",
+  "9 MOBILE": "img/ninemobileLogo.png"
 };
-
 const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode, toggleTheme }) => {
   const { t, setLanguage, language } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState<keyof typeof pricingData>('MTN');
+  type Network = keyof typeof pricingData;
+const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   const features = [
@@ -157,15 +160,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode
     onLogin();
   };
 
+  // const scrollToSection = (id: string) => {
+  //   setIsMenuOpen(false);
+  //   setTimeout(() => {
+  //     const element = document.getElementById(id);
+  //     if (element) {
+  //       element.scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //   }, 100);
+  // };
   const scrollToSection = (id: string) => {
-    setIsMenuOpen(false);
-    setTimeout(() => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
+  setIsMenuOpen(false);
+  setTimeout(() => {
+    const element = document.getElementById(id);
+    if (element) {
+      // 1. Get the element's position relative to the entire page
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      
+      // 2. Subtract the height of your fixed navbar (adjust 90 to match your header height)
+      const offsetPosition = elementPosition - 90;
+
+      // 3. Smoothly scroll to the calculated position
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  }, 100);
+};
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -355,7 +377,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode
             >
               <div className="absolute inset-0 bg-[#084328]/5 rounded-full blur-[120px]" />
               <img 
-                src="https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/hero-image-payflow-app-7e515208-1776532585256.webp" 
+                src={heroImg}
                 alt="PayStation App" 
                className="relative w-full max-w-[500px] lg:max-w-[520px] xl:max-w-[580px] mx-auto rounded-[2.5rem] shadow-2xl border-8 border-white dark:border-slate-900 transform lg:rotate-2 hover:rotate-0 transition-all duration-700"
               />
@@ -372,7 +394,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode
             <p className="text-slate-500 dark:text-slate-400 text-xl font-medium max-w-2xl mx-auto">{t('why_desc')}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, idx) => (
+            {/* {features.map((feature, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -390,7 +412,33 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode
                   <img src={feature.image} alt={feature.title} className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-700" />
                 </div>
               </motion.div>
-            ))}
+            ))} */}
+            {features.map((feature, idx) => (
+  <motion.div
+    key={idx}
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: idx * 0.1 }}
+    className="bg-white dark:bg-slate-900/50 p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all border border-slate-100 dark:border-slate-800 group cursor-default"
+  >
+    <div className={`w-16 h-16 ${feature.color} rounded-2xl flex items-center justify-center mb-8 text-white shadow-lg shadow-current/20 group-hover:scale-110 transition-transform`}>
+      <feature.icon size={32} />
+    </div>
+    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">{feature.title}</h3>
+    <p className="text-slate-500 dark:text-slate-400 font-medium mb-8 leading-relaxed">{feature.description}</p>
+    
+    {/* Removed global 'grayscale' from this wrapper div */}
+    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden transition-all duration-500">
+      <img 
+        src={feature.image} 
+        alt={feature.title} 
+        // Handles zoom on all devices when the card is active/hovered, but ONLY turns gray on desktop mouse-hover (lg:)
+        className="object-cover w-full h-full transform group-hover:scale-110 lg:group-hover:grayscale transition-all duration-700" 
+      />
+    </div>
+  </motion.div>
+))}
           </div>
         </div>
       </section>
@@ -411,7 +459,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode
                 <button
                   key={network}
                   onClick={() => setSelectedNetwork(network)}
-                  className="flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 border-2 active:scale-95"
+                  className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 border-2 active:scale-95
+  ${selectedNetwork === network
+    ? 'bg-[#084328] text-white border-[#084328]'
+    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700'
+  }
+`}
                 >
                    {/* Correct dynamic class application inside JSX is better handled here */}
                    <div className={`flex items-center gap-3 ${selectedNetwork === network ? 'text-white' : ''}`}>
@@ -420,6 +473,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignUp, isDarkMode
                         alt={network} 
                         className="w-6 h-6 rounded-md object-cover border border-slate-200/50"
                       />
+                      {/* <img
+  src={networkLogos[network]}
+  alt={network}
+  className="w-8 h-8 object-contain"
+onError={(e) => {
+  (e.target as HTMLImageElement).src = "/img/default.png";
+}}
+/> */}
                       {network}
                    </div>
                 </button>
