@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Zap, Smartphone, Wifi, BookOpen, MessageSquare, 
   CreditCard, Users, History, User, Home, Bell, LogOut, Plus, 
-  Search, ChevronRight, Moon, Sun, Settings, Lightbulb, Tv, Languages, Plane, Copy, Check
+  Search, ChevronRight, Moon, Sun, Settings, Lightbulb, Tv, Languages, Plane, Copy, Check, Menu
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -93,26 +93,33 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
             <p className="text-slate-500 dark:text-slate-400 font-medium">{t('ready_trans')}</p>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="hidden md:block">
-              <LanguageSelector />
-            </div>
-            
+            <Button variant="outline" size="icon" className="hidden md:inline-flex rounded-2xl w-12 h-12 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm relative shrink-0">
+              <Bell size={22} className="text-slate-600 dark:text-slate-400" />
+              <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900" />
+            </Button>
+            <Avatar className="hidden md:flex w-12 h-12 border-2 border-[#084328] shadow-lg shrink-0 cursor-pointer hover:scale-105 transition-transform" onClick={() => setActiveTab('profile')}>
+              <AvatarFallback className="bg-slate-100 dark:bg-slate-800">
+                <User size={24} className="text-[#084328]" />
+              </AvatarFallback>
+            </Avatar>
             <div className="flex md:hidden items-center gap-2">
-              <button 
-                onClick={toggleTheme}
-                className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-600 dark:text-slate-400 focus:outline-none"
-              >
-                {isDarkMode ? <Sun size={22} className="text-yellow-500" /> : <Moon size={22} className="text-blue-500" />}
-              </button>
-              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm text-slate-600 dark:text-slate-400 focus:outline-none">
-                    <Languages size={22} />
+                    <Menu size={22} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 rounded-[2rem] p-3 border-none shadow-2xl dark:bg-slate-900">
-                  <DropdownMenuLabel className="px-4 py-2 text-xs font-black uppercase text-slate-400">Select Language</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-64 rounded-[2rem] p-2 border-none shadow-2xl dark:bg-slate-900">
+                  <DropdownMenuLabel className="px-4 py-2 text-xs font-black uppercase text-slate-400">Menu</DropdownMenuLabel>
+                  <DropdownMenuItem 
+                    onClick={toggleTheme}
+                    className="rounded-xl p-3 font-bold flex items-center gap-3 focus:bg-[#084328]/10 focus:text-[#084328]"
+                  >
+                    {isDarkMode ? <Sun size={18} className="text-yellow-500" /> : <Moon size={18} className="text-blue-500" />}
+                    <span>{isDarkMode ? t('light_mode') : t('dark_mode')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-2 border-slate-200 dark:border-slate-800" />
+                  <DropdownMenuLabel className="px-4 py-2 text-xs font-black uppercase text-slate-400">Language</DropdownMenuLabel>
                   {(Object.keys(languages) as Language[]).map((lang) => (
                     <DropdownMenuItem 
                       key={lang} 
@@ -120,27 +127,30 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
                         setLanguage(lang);
                         toast.success(`Language changed to ${languages[lang].name}`);
                       }}
-                      className={`rounded-xl p-3 font-bold flex items-center justify-between focus:bg-[#084328]/10 focus:text-[#084328] ${language === lang ? 'bg-[#084328]/10 text-[#084328]' : ''}`}
+                      className={`rounded-xl p-3 font-bold flex items-center gap-3 focus:bg-[#084328]/10 focus:text-[#084328] ${language === lang ? 'bg-[#084328]/10 text-[#084328]' : ''}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <span>{languages[lang].flag}</span>
-                        <span>{languages[lang].name}</span>
-                      </div>
+                      <span>{languages[lang].flag}</span>
+                      <span>{languages[lang].name}</span>
                     </DropdownMenuItem>
                   ))}
+                  <DropdownMenuSeparator className="my-2 border-slate-200 dark:border-slate-800" />
+                  <DropdownMenuItem 
+                    onClick={() => {}}
+                    className="rounded-xl p-3 font-bold flex items-center gap-3 focus:bg-[#084328]/10 focus:text-[#084328]"
+                  >
+                    <Bell size={18} />
+                    <span>{t('notifications')}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setActiveTab('profile')}
+                    className="rounded-xl p-3 font-bold flex items-center gap-3 focus:bg-[#084328]/10 focus:text-[#084328]"
+                  >
+                    <User size={18} />
+                    <span>{t('dashboard_profile')}</span>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-
-            <Button variant="outline" size="icon" className="rounded-2xl w-12 h-12 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm relative shrink-0">
-              <Bell size={22} className="text-slate-600 dark:text-slate-400" />
-              <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900" />
-            </Button>
-            <Avatar className="w-12 h-12 border-2 border-[#084328] shadow-lg shrink-0 cursor-pointer hover:scale-105 transition-transform" onClick={() => setActiveTab('profile')}>
-              <AvatarFallback className="bg-slate-100 dark:bg-slate-800">
-                <User size={24} className="text-[#084328]" />
-              </AvatarFallback>
-            </Avatar>
           </div>
         </header>
 
@@ -237,28 +247,7 @@ const HomeView = ({
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* <Card className="bg-[#084328] border-none text-white shadow-2xl shadow-green-600/20 overflow-hidden relative rounded-[2.5rem]">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
-          <Zap size={180} className="fill-white" />
-        </div>
-        <CardContent className="p-8 md:p-10 relative z-10">
-          <div className="flex justify-between items-start mb-10">
-            <div>
-              <p className="text-green-50/80 text-base md:text-lg font-bold mb-2">{t('wallet_balance')}</p>
-              <h3 className="text-4xl md:text-5xl font-black tracking-tight">6{(user.walletBalance || 0).toLocaleString()}</h3>
-            </div>
-            <Badge className="bg-white/20 backdrop-blur-md text-white border-none py-1.5 px-4 rounded-full font-bold">
-              {(user.role || 'user').toUpperCase()}
-            </Badge>
-          </div>
-          
-          <div className="flex gap-4">
-            <Button onClick={onOpenFunding} className="bg-white text-[#084328] hover:bg-slate-100 flex-1 h-14 md:h-16 rounded-2xl font-black text-lg md:text-xl shadow-xl shadow-green-900/10 border-none transition-all">
-              <Plus className="mr-2" size={20} strokeWidth={3} /> {t('add_money')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card> */}
+     
 
 <Card className="bg-[#084328] border-none text-white shadow-2xl shadow-green-600/20 overflow-hidden relative rounded-[2.5rem]">
   <div className="absolute top-0 right-0 p-8 opacity-10">
