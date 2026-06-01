@@ -11,7 +11,7 @@ const SplashView = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center shadow-2xl mb-8"
       >
-        <Zap className="text-green-600 fill-green-600" size={48} />
+        <Zap className="text-[#084328] fill-[#084328]" size={48} />
       </motion.div>
       <motion.h1 
         initial={{ y: 20, opacity: 0 }}

@@ -18,6 +18,12 @@ import { toast } from 'sonner';
 
 // img imports
 import heroImg from '../../img/hero-img.png';
+import utilitybill from '../../img/utilitybillpayments.png';
+import examsresultimage from '../../img/examsresultimage.png';
+import securewallet from '../../img/walletimg.png';
+import SamuelImg from '../../img/SamuelImg.png';
+import FahadImg from '../../img/FahadImg.png';
+import ZeenatImg from '../../img/zinatimg.png';
 
 interface LandingPageProps {
   onLogin: () => void;
@@ -74,32 +80,32 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
 
   const features = [
     {
-      title: t('feat_mobile_title', 'Mobile Top-up'),
-      description: t('feat_mobile_desc', 'Instant airtime and data for MTN, Airtel, Glo, and 9mobile at discounted rates.'),
-      icon: Smartphone,
-      color: 'bg-[#084328]',
-      image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/hero-image-payflow-app-7e515208-1776532585256.webp'
-    },
+  title: t('feat_mobile_title', 'Mobile Top-up'),
+  description: t('feat_mobile_desc', 'Instant airtime and data for MTN, Airtel, Glo, and 9mobile at discounted rates.'),
+  icon: Smartphone,
+  color: 'bg-[#084328]',
+  image: heroImg
+},
     {
       title: t('feat_bills_title', 'Bill Payments'),
-      description: t('feat_bills_desc', 'Pay electricity bills and cable TV subscriptions (DSTV, GOTV, Startimes) with zero stress.'),
+      description: t('feat_bills_desc', 'Pay electricity bills and cable TV subscriptions (DSTV, GOTV, Startimes, etc) with zero stress.'),
       icon: Lightbulb,
       color: 'bg-[#084328]',
-      image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/utility-bill-payments-illustration-7f070af1-1776532588403.webp'
+      image: utilitybill
     },
     {
       title: t('feat_exam_title', 'Exam Result Pins'),
-      description: t('feat_exam_desc', 'Get instant WAEC, NECO, and JAMB result checker pins delivered to your dashboard.'),
+      description: t('feat_exam_desc', 'Get instant WAEC, NECO, and JAMB pins delivered to your dashboard.'),
       icon: Sparkles,
       color: 'bg-[#084328]',
-      image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/user-experience-payflow-af3cb580-1776532586194.webp'
+      image: examsresultimage
     },
     {
       title: t('feat_secure_title', 'Secure Wallet'),
       description: t('feat_secure_desc', 'Fund your wallet via multiple channels and manage your finances securely.'),
       icon: ShieldCheck,
       color: 'bg-[#084328]',
-      image: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/secure-digital-wallet-illustration-240271bb-1776532585147.webp'
+      image: securewallet
     }
   ];
 
@@ -121,13 +127,13 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
       question: t('faq_q2', 'What Are The Codes For Checking Data Balance?'),
       answer: (
         <div className="space-y-1 text-slate-500 dark:text-slate-400 font-medium">
-          <p>MTN[SME] \u2192 *461*4#</p>
-          <p>MTN[CG] \u2192 *460*260#</p>
-          <p>MTN[SME2] \u2192 *460*260#</p>
-          <p>MTN[Coupon] \u2192 *323*4#</p>
-          <p>9mobile[CG] \u2192 *323#</p>
-          <p>Airtel[CG] \u2192 *323#</p>
-          <p>Glo[CG] \u2192 *127*0#</p>
+          <p>MTN[SME] *461*4#</p>
+          <p>MTN[CG] *460*260#</p>
+          <p>MTN[SME2]  *460*260#</p>
+          <p>MTN[Coupon]  *323*4#</p>
+          <p>9mobile[CG]  *323#</p>
+          <p>Airtel[CG]  *323#</p>
+          <p>Glo[CG]  *127*0#</p>
         </div>
       )
     },
@@ -160,15 +166,7 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
     onLogin();
   };
 
-  // const scrollToSection = (id: string) => {
-  //   setIsMenuOpen(false);
-  //   setTimeout(() => {
-  //     const element = document.getElementById(id);
-  //     if (element) {
-  //       element.scrollIntoView({ behavior: 'smooth' });
-  //     }
-  //   }, 100);
-  // };
+  
   const scrollToSection = (id: string) => {
   setIsMenuOpen(false);
   setTimeout(() => {
@@ -572,7 +570,7 @@ onError={(e) => {
                   </div>
                 </div>
                 <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed italic">
-                  \\"{testimonial.quote}\\"
+                  "{testimonial.quote}"
                 </p>
               </motion.div>
             ))}
@@ -738,13 +736,16 @@ onError={(e) => {
           </div>
 
           <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-sm text-center md:text-left">
-              {t('developed_at')} <span className="text-[#084328]">KhalidTech Solutions</span>
-            </p>
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-sm text-center md:text-right">
-              {t('all_rights')} \u00a9 KhalidTech Solutions
-            </p>
-          </div>
+  {/* Copyright Section */}
+  <p className="text-slate-500 dark:text-slate-400 font-medium text-sm text-center md:text-left">
+    &copy; {new Date().getFullYear()} Flash-Lite. All rights reserved.
+  </p>
+
+  {/* Developer Credit */}
+  <p className="text-slate-500 dark:text-slate-400 font-medium text-sm text-center md:text-right">
+    Crafted with precision by <span className="text-[#084328] font-bold">KhalidTech Solutions</span>
+  </p>
+</div>
         </div>
       </footer>
     </div>
@@ -755,19 +756,19 @@ const testimonials = [
   {
     name: "Samuel Okon",
     role: "Merchant Agent",
-    image: "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/testimonial-avatar-1-55944aa9-1776536909798.webp",
+    image: SamuelImg,
     quote: "PayStation has completely transformed my VTU business. Transactions are instant and the customer support is top-notch."
   },
   {
-    name: "Amaka Eze",
+    name: "Zeenat Rabiu",
     role: "Student",
-    image: "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/testimonial-avatar-2-ddf395b0-1776536910646.webp",
+    image: ZeenatImg,
     quote: "I never have to worry about my data running out at night. With PayStation, I get my data top-up in seconds!"
   },
   {
-    name: "Tunde Williams",
+    name: "Fahad Jibril",
     role: "Corporate Professional",
-    image: "https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/testimonial-avatar-3-129d9a8d-1776536912456.webp",
+    image: FahadImg,
     quote: "Reliability is key for me. PayStation provides the security and speed I need for all my bill payments."
   }
 ];
