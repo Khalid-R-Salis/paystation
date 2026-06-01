@@ -309,9 +309,9 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
       {/* Hero Section */}
       <section className="relative pt-[90px] pb-10 lg:pt-[134px] lg:pb-16 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16"> */}
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-[2px]">
-            <div className="lg:w-1/2 space-y-10 text-center lg:text-left min-w-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[2px] auto-rows-max lg:auto-rows-1fr items-start">
+            {/* Text content - badge, title, subtitle */}
+            <div className="space-y-10 text-center lg:text-left min-w-0 lg:col-start-1">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -325,7 +325,6 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  // className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white leading-[0.9] break-words"
                   className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white leading-[1.05] sm:leading-[1] break-normal"
                 >
                   {t('hero_welcome')} <br />
@@ -340,6 +339,25 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
                   {t('hero_subtitle')}
                 </motion.p>
               </div>
+            </div>
+
+            {/* Hero image - appears after subtitle on mobile, next to text on desktop */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              className="w-full col-span-full lg:col-span-1 lg:row-start-1 lg:col-start-2 relative shrink-0"
+            >
+              <div className="absolute inset-0 bg-[#084328]/5 rounded-full blur-[120px]" />
+              <img 
+                src={heroImg}
+                alt="PayStation App" 
+                className="relative w-full max-w-[500px] lg:max-w-[520px] xl:max-w-[580px] mx-auto rounded-[2.5rem] shadow-2xl border-8 border-white dark:border-slate-900 transform lg:rotate-2 hover:rotate-0 transition-all duration-700"
+              />
+            </motion.div>
+
+            {/* Text content - description and buttons */}
+            <div className="space-y-10 text-center lg:text-left min-w-0 col-span-full lg:col-start-1 lg:col-span-1">
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -363,19 +381,6 @@ const [selectedNetwork, setSelectedNetwork] = useState<Network>('MTN');
                 </Button>
               </motion.div>
             </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="lg:w-1/2 relative shrink-0"
-            >
-              <div className="absolute inset-0 bg-[#084328]/5 rounded-full blur-[120px]" />
-              <img 
-                src={heroImg}
-                alt="PayStation App" 
-               className="relative w-full max-w-[500px] lg:max-w-[520px] xl:max-w-[580px] mx-auto rounded-[2.5rem] shadow-2xl border-8 border-white dark:border-slate-900 transform lg:rotate-2 hover:rotate-0 transition-all duration-700"
-              />
-            </motion.div>
           </div>
         </div>
       </section>
