@@ -50,6 +50,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showAgentUpgrade, setShowAgentUpgrade] = useState(false);
   const [showServicesModal, setShowServicesModal] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const confirmLogout = () => {
+    onLogout();
+    setShowLogoutConfirm(false);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-32 md:pb-0 md:pl-64 transition-colors duration-300">
@@ -80,7 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
            </Button>
         </div>
 
-        <button onClick={onLogout} className="flex items-center gap-3 px-6 py-4 text-slate-500 hover:text-red-600 font-black text-lg transition-colors">
+        <button onClick={() => setShowLogoutConfirm(true)} className="flex items-center gap-3 px-6 py-4 text-slate-500 hover:text-red-600 font-black text-lg transition-colors">
           <LogOut size={20} /> {t('dashboard_logout')}
         </button>
       </nav>
@@ -226,10 +232,29 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
           </Button>
         </div>
         <MobileNavLink active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} icon={User} />
-        <button onClick={onLogout} className="p-3 text-red-400 active:scale-90 transition-transform">
+        <button onClick={() => setShowLogoutConfirm(true)} className="p-3 text-red-400 active:scale-90 transition-transform">
           <LogOut size={26} />
         </button>
       </nav>
+
+      <Dialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <DialogContent className="sm:max-w-sm rounded-[2.5rem] p-6 border-none shadow-2xl dark:bg-slate-900">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black">{t('logout_confirm_title', 'Confirm Logout')}</DialogTitle>
+            <DialogDescription className="text-slate-500 dark:text-slate-400 mt-2">
+              {t('logout_confirm_desc', 'Are you sure you want to logout?')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <Button className="w-full sm:w-auto flex-1 h-14 rounded-2xl bg-[#084328] hover:bg-[#063a23] text-white font-black" onClick={confirmLogout}>
+              {t('yes', 'Yes')}
+            </Button>
+            <Button variant="outline" className="w-full sm:w-auto flex-1 h-14 rounded-2xl border-slate-200 dark:border-slate-700 font-black text-foreground" onClick={() => setShowLogoutConfirm(false)}>
+              {t('no', 'No')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
