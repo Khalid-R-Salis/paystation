@@ -24,16 +24,29 @@ import { FundingModal } from './FundingModal';
 import { EditProfileModal } from './EditProfileModal';
 import { AgentUpgradeModal } from './AgentUpgradeModal';
 
+// const SERVICES = (t: any) => [
+//   { id: 'data', name: t('serv_data'), icon: Wifi, color: 'bg-[#084328]' },
+//   { id: 'airtime', name: t('serv_airtime'), icon: Smartphone, color: 'bg-blue-500' },
+//   { id: 'cable', name: t('serv_cable'), icon: Tv, color: 'bg-purple-500' },
+//   { id: 'electricity', name: t('serv_electricity'), icon: Zap, color: 'bg-yellow-500' },
+//   { id: 'exam', name: t('Exam Pins'), icon: BookOpen, color: 'bg-orange-500' },
+//   { id: 'cash', name: t('serv_airtime_cash'), icon: CreditCard, color: 'bg-teal-500' },
+//   { id: 'sms', name: t('serv_bulk_sms'), icon: MessageSquare, color: 'bg-red-500' },
+//   { id: 'flight', name: t('serv_flight'), icon: Plane, color: 'bg-sky-600' },
+// ];
+
 const SERVICES = (t: any) => [
-  { id: 'data', name: t('serv_data'), icon: Wifi, color: 'bg-[#084328]' },
-  { id: 'airtime', name: t('serv_airtime'), icon: Smartphone, color: 'bg-blue-500' },
-  { id: 'cable', name: t('serv_cable'), icon: Tv, color: 'bg-purple-500' },
-  { id: 'electricity', name: t('serv_electricity'), icon: Zap, color: 'bg-yellow-500' },
-  { id: 'exam', name: t('serv_exam_pins'), icon: BookOpen, color: 'bg-orange-500' },
-  { id: 'cash', name: t('serv_airtime_cash'), icon: CreditCard, color: 'bg-teal-500' },
-  { id: 'sms', name: t('serv_bulk_sms'), icon: MessageSquare, color: 'bg-red-500' },
-  { id: 'flight', name: t('serv_flight'), icon: Plane, color: 'bg-sky-600' },
+  { id: 'data', name: t('Data Topup'), icon: Wifi, color: 'bg-[#084328]' },
+  { id: 'airtime', name: t('Airtime'), icon: Smartphone, color: 'bg-[#166534]' },
+  { id: 'cable', name: t('Cable TV'), icon: Tv, color: 'bg-[#084328]' },
+  { id: 'electricity', name: t('Electricity'), icon: Zap, color: 'bg-[#084328]' },
+  { id: 'exam', name: t('Exam Pins'), icon: BookOpen, color: 'bg-[#166534]' },
+  { id: 'cash', name: t('Airtime to Cash'), icon: CreditCard, color: 'bg-[#084328]' },
+  { id: 'sms', name: t('Bulk SMS'), icon: MessageSquare, color: 'bg-[#084328]' },
+  { id: 'flight', name: t('Flight Booking'), icon: Plane, color: 'bg-[#166534]' },
 ];
+
+
 
 interface DashboardProps {
   user: UserType;
@@ -199,7 +212,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
 
       {/* Services Overlay Modal */}
       <Dialog open={showServicesModal} onOpenChange={setShowServicesModal}>
-        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-8 border-none shadow-2xl dark:bg-slate-900">
+        <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-8 border-none shadow-2xl dark:bg-slate-900 overflow-y-auto max-h-[85vh] custom-scrollbar">
           <DialogHeader>
             <DialogTitle className="text-3xl font-black">{t('all_services')}</DialogTitle>
             <DialogDescription className="font-medium">Access all our instant digital services</DialogDescription>

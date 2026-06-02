@@ -650,7 +650,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 border-none shadow-2xl dark:bg-slate-900 overflow-hidden">
+      <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 border-none shadow-2xl dark:bg-slate-900 max-h-[95vh] overflow-y-auto custom-scrollbar">
         <div className="bg-slate-50 dark:bg-slate-800/30 p-8 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm text-slate-900 dark:text-white">
