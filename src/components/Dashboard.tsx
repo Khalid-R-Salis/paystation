@@ -24,17 +24,6 @@ import { FundingModal } from './FundingModal';
 import { EditProfileModal } from './EditProfileModal';
 import { AgentUpgradeModal } from './AgentUpgradeModal';
 
-// const SERVICES = (t: any) => [
-//   { id: 'data', name: t('serv_data'), icon: Wifi, color: 'bg-[#084328]' },
-//   { id: 'airtime', name: t('serv_airtime'), icon: Smartphone, color: 'bg-blue-500' },
-//   { id: 'cable', name: t('serv_cable'), icon: Tv, color: 'bg-purple-500' },
-//   { id: 'electricity', name: t('serv_electricity'), icon: Zap, color: 'bg-yellow-500' },
-//   { id: 'exam', name: t('Exam Pins'), icon: BookOpen, color: 'bg-orange-500' },
-//   { id: 'cash', name: t('serv_airtime_cash'), icon: CreditCard, color: 'bg-teal-500' },
-//   { id: 'sms', name: t('serv_bulk_sms'), icon: MessageSquare, color: 'bg-red-500' },
-//   { id: 'flight', name: t('serv_flight'), icon: Plane, color: 'bg-sky-600' },
-// ];
-
 const SERVICES = (t: any) => [
   { id: 'data', name: t('Data Topup'), icon: Wifi, color: 'bg-[#084328]' },
   { id: 'airtime', name: t('Airtime'), icon: Smartphone, color: 'bg-[#166534]' },
@@ -347,7 +336,7 @@ const HomeView = ({
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">6{(500 * i).toLocaleString()}</p>
+                    <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">₦{(500 * i).toLocaleString()}</p>
                     <p className="text-[10px] font-black uppercase text-[#084328] bg-[#084328]/10 px-2 py-0.5 rounded-full inline-block">{t('success')}</p>
                   </div>
                 </div>
@@ -472,7 +461,7 @@ const TransactionsView = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">6{tx.amount.toLocaleString()}</p>
+                <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">₦{tx.amount.toLocaleString()}</p>
                 <Badge variant="outline" className="border-green-600/20 text-green-600 font-black px-3 py-1 bg-green-600/5 uppercase">{t('success')}</Badge>
               </div>
             </div>

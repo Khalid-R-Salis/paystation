@@ -48,9 +48,9 @@ export const FundingModal: React.FC<FundingModalProps> = ({ isOpen, onClose, use
 
   // Dynamic bank account generation based on user profile
   const bankDetails = {
-    bank: "Wema Bank (SMRT WALLET/Monnify)",
+    bank: "Wema Bank (PAYSTATION/Monnify)",
     accountNumber: "99" + (user.phone?.replace(/\D/g, '').slice(-8) || "00000000"),
-    accountName: `SMRT WALLET / ${user.name?.toUpperCase() || 'CLIENT'}`
+    accountName: `PAYSTATION / ${user.name?.toUpperCase() || 'CLIENT'}`
   };
 
   const handleCopy = (text: string) => {
@@ -144,11 +144,11 @@ const confirmPaystackPayment = async () => {
     <>
       {/* Main Funding Selection Modal */}
       <Dialog open={isOpen && !showPaystackMock} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] p-0 border-none overflow-hidden shadow-2xl dark:bg-slate-900">
+        <DialogContent className="sm:max-w-[500px] rounded-[2.5rem] p-0 border-none overflow-hidden shadow-2xl dark:bg-slate-900 max-h-[95vh] overflow-y-auto custom-scrollbar">
           <div className="bg-[#084328] p-8 text-white relative">
             <div className="relative z-10">
               <h2 className="text-3xl font-black mb-2">{t('add_money')}</h2>
-              <p className="text-green-50/70 font-medium tracking-tight">Securely fund your SMRT WALLET</p>
+              <p className="text-green-50/70 font-medium tracking-tight">Securely fund your PAYSTATION</p>
             </div>
             <Wallet className="absolute top-4 right-4 text-white/10 w-32 h-32" />
           </div>
@@ -223,7 +223,7 @@ const confirmPaystackPayment = async () => {
                     <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-2xl flex gap-3 border border-blue-100/50">
                       <Smartphone className="text-blue-500 shrink-0" size={20} />
                       <p className="text-[11px] text-blue-800 dark:text-blue-300 font-bold leading-relaxed">
-                        Transfer to this account from any bank app. Your SMRT WALLET balance will update automatically within 2 minutes.
+                        Transfer to this account from any bank app. Your PAYSTATION balance will update automatically within 2 minutes.
                       </p>
                     </div>
                   </div>
@@ -288,7 +288,7 @@ const confirmPaystackPayment = async () => {
                 <Zap size={20} className="fill-white" />
               </div>
               <div>
-                <h3 className="font-black text-slate-900 text-sm">SMRT WALLET Checkout</h3>
+                <h3 className="font-black text-slate-900 text-sm">PAYSTATION Checkout</h3>
                 <p className="text-[10px] font-bold text-slate-500 uppercase">{user.email}</p>
               </div>
             </div>

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from './ui/badge';
 import { toast } from 'sonner';
 import { useLanguage } from '../context/LanguageContext';
+import { fetchElectricityProviders } from '../lib/utils';
 import { 
   Loader2, Smartphone, Wifi, BookOpen, Tv, CreditCard, 
   MessageSquare, Send, Search, CheckCircle2, ChevronRight,
@@ -16,11 +17,18 @@ import {
 } from 'lucide-react';
 
 const NETWORKS = [
-  { id: 'mtn', name: 'MTN', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/mtn-logo-new-8f041ca2-1776680499445.webp' },
-  { id: 'airtel', name: 'Airtel', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/airtel-logo-new-b8b1d852-1776680498793.webp' },
-  { id: 'glo', name: 'GLO', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/glo-logo-new-f9404ab2-1776680499878.webp' },
-  { id: '9mobile', name: '9Mobile', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/9mobile-logo-new-51dafa7b-1776680501776.webp' },
+  { id: 'mtn', name: 'MTN', logo:'/mtnLogo.png' },
+  { id: 'airtel', name: 'Airtel', logo: '/airtelLogo.png' },
+  { id: 'glo', name: 'GLO', logo: '/gloLogo.png' },
+  { id: '9mobile', name: '9Mobile', logo: '/ninemobileLogo.png' },
 ];
+
+// const networkLogos = {
+//   MTN: "mtnLogo.png",
+//   AIRTEL: "airtelLogo.png",
+//   GLO: "gloLogo.png",
+//   "9 MOBILE": "ninemobileLogo.png"
+// };
 
 const DATA_PLANS: Record<string, any[]> = {
   mtn: [
@@ -53,13 +61,14 @@ const BILL_PROVIDERS = {
     { id: 'ekedc', name: 'Eko Electric (EKEDC)' },
     { id: 'kaedco', name: 'Kaduna Electric (KAEDCO)' },
     { id: 'jed', name: 'Jos Electric (JED)' },
+    { id: 'aed', name: 'Abuja Electric (AED)' },
     { id: 'phed', name: 'Port Harcourt Electric (PHED)' },
   ],
   cable: [
-    { id: 'dstv', name: 'DSTV', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/dstv-logo-new-d1e409f1-1776680500095.webp' },
-    { id: 'gotv', name: 'GOTV', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/gotv-logo-new-5488dcb3-1776680499005.webp' },
-    { id: 'startimes', name: 'StarTimes', logo: 'https://storage.googleapis.com/dala-prod-public-storage/generated-images/389bcda3-883e-4e42-8765-8bfb48337f43/startimes-logo-new-c3be90ee-1776680500028.webp' },
-    { id: 'tstv', name: 'TSTV', logo: 'https://api.dicebear.com/7.x/initials/svg?seed=TSTV' },
+    { id: 'dstv', name: 'DSTV', logo: '/DSTVlogo.png' },
+    { id: 'gotv', name: 'GOTV', logo: '/GoTVLogo.png' },
+    { id: 'startimes', name: 'StarTimes', logo: '/StarTimeslogo.jpg' },
+    { id: 'tstv', name: 'TSTV', logo: '/TSTVLogo.png' },
   ]
 };
 
@@ -92,6 +101,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<any>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [electricityProviders, setElectricityProviders] = useState<any[]>([]);
+  const [loadingProviders, setLoadingProviders] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -100,6 +111,26 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
       setSearchQuery('');
     }
   }, [isOpen]);
+
+  // Fetch electricity providers from API
+  useEffect(() => {
+    if ((type === 'electricity' || type === 'bills') && isOpen) {
+      const fetchProviders = async () => {
+        setLoadingProviders(true);
+        try {
+          const providers = await fetchElectricityProviders();
+          setElectricityProviders(providers);
+        } catch (error) {
+          console.error("Failed to fetch electricity providers:", error);
+          toast.error("Failed to load electricity providers");
+        } finally {
+          setLoadingProviders(false);
+        }
+      };
+      
+      fetchProviders();
+    }
+  }, [type, isOpen]);
 
   const validateFields = () => {
     if (type === 'airtime' && (!formData.network || !formData.phone || !formData.amount)) return false;
@@ -194,7 +225,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 return null;
              })}
              <div className="pt-3 mt-3 border-t border-green-100 dark:border-green-900/50">
-                <SummaryItem label="TOTAL PAYABLE" value={`6${Number(formData.amount || 0).toLocaleString()}`} highlight />
+                <SummaryItem label="TOTAL PAYABLE" value={`₦${Number(formData.amount || 0).toLocaleString()}`} highlight />
              </div>
           </div>
        </div>
@@ -282,7 +313,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
                     {formData.network && DATA_PLANS[formData.network]?.map((plan: any) => (
-                      <SelectItem key={plan.id} value={plan.id} className="rounded-xl font-bold p-3">{plan.name} - 6{plan.price} ({plan.validity})</SelectItem>
+                      <SelectItem key={plan.id} value={plan.id} className="rounded-xl font-bold p-3">{plan.name} - ₦{plan.price} ({plan.validity})</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -305,12 +336,23 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
           <div className="space-y-5 animate-in slide-in-from-bottom-2">
              <div className="space-y-2">
                 <Label className="font-black text-xs uppercase text-slate-400 ml-1">Electricity Disco</Label>
-                <Select onValueChange={(val) => setFormData({ ...formData, provider: val })}>
+                <Select onValueChange={(val) => setFormData({ ...formData, provider: val })} disabled={loadingProviders}>
                   <SelectTrigger className="h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border-none font-bold shadow-sm">
-                    <SelectValue placeholder="Select Disco Provider" />
+                    <SelectValue placeholder={loadingProviders ? "Loading providers..." : "Select Disco Provider"} />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    {BILL_PROVIDERS.electricity.map((p) => <SelectItem key={p.id} value={p.id} className="rounded-xl font-bold p-3">{p.name}</SelectItem>)}
+                    {loadingProviders ? (
+                      <div className="flex items-center justify-center p-4 gap-2">
+                        <Loader2 className="animate-spin" size={16} />
+                        <span className="text-sm font-bold">Loading providers...</span>
+                      </div>
+                    ) : electricityProviders.length > 0 ? (
+                      electricityProviders.map((p) => <SelectItem key={p.id} value={p.id} className="rounded-xl font-bold p-3">{p.name}</SelectItem>)
+                    ) : (
+                      <div className="p-4 text-center text-sm text-slate-500">
+                        No providers available
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -337,7 +379,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 />
               </div>
               <div className="space-y-2">
-                <Label className="font-black text-xs uppercase text-slate-400 ml-1">Payment Amount (6)</Label>
+                <Label className="font-black text-xs uppercase text-slate-400 ml-1">Payment Amount (₦)</Label>
                 <Input 
                   type="number" 
                   placeholder="Min. 1000" 
@@ -408,7 +450,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                             <p className="font-black text-slate-900 dark:text-white text-sm">{pkg.name}</p>
                             <p className="text-[10px] font-bold text-slate-400 uppercase">Subscription Plan</p>
                          </div>
-                         <p className="font-black text-[#084328]">6{pkg.price.toLocaleString()}</p>
+                         <p className="font-black text-[#084328]">₦{pkg.price.toLocaleString()}</p>
                       </button>
                    ))}
                 </div>
@@ -429,7 +471,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                     <SelectValue placeholder="Select Provider" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl">
-                    {EXAM_PROVIDERS.map((p) => <SelectItem key={p.id} value={p.id} className="rounded-xl font-bold p-3">{p.name} - 6{p.price}</SelectItem>)}
+                    {EXAM_PROVIDERS.map((p) => <SelectItem key={p.id} value={p.id} className="rounded-xl font-bold p-3">{p.name} - ₦{p.price}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -450,7 +492,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
               {formData.amount > 0 && (
                 <div className="bg-[#084328]/5 p-5 rounded-2xl flex justify-between items-center border border-[#084328]/10 shadow-sm">
                    <span className="font-bold text-slate-600 dark:text-slate-400">Total Cost:</span>
-                   <span className="text-2xl font-black text-[#084328] dark:text-green-400">6{formData.amount.toLocaleString()}</span>
+                   <span className="text-2xl font-black text-[#084328] dark:text-green-400">₦{formData.amount.toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -479,7 +521,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
               </div>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                    <Label className="font-black text-xs uppercase text-slate-400 ml-1">Airtime Amount (6)</Label>
+                    <Label className="font-black text-xs uppercase text-slate-400 ml-1">Airtime Amount (₦)</Label>
                     <Input 
                       type="number" 
                       placeholder="Min. 500" 
@@ -493,7 +535,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                  <div className="space-y-2">
                     <Label className="font-black text-xs uppercase text-slate-400 ml-1">Wallet Payout</Label>
                     <div className="h-14 rounded-2xl bg-green-50 dark:bg-green-950/20 flex items-center px-4 font-black text-[#084328] dark:text-green-400 border border-green-100/50 dark:border-green-900/50">
-                       6{formData.receive?.toLocaleString() || 0}
+                       ₦{formData.receive?.toLocaleString() || 0}
                     </div>
                  </div>
               </div>
@@ -547,7 +589,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
                 ></textarea>
                 <div className="flex justify-between mt-1 px-1">
                    <span className="text-[10px] font-black uppercase text-slate-400">{formData.chars || 0} Characters ({formData.pages || 1} page)</span>
-                   <span className="text-xs font-black text-[#084328] dark:text-green-400">Estimated Cost: 6{formData.amount || 0}</span>
+                   <span className="text-xs font-black text-[#084328] dark:text-green-400">Estimated Cost: ₦{formData.amount || 0}</span>
                 </div>
               </div>
             </div>
