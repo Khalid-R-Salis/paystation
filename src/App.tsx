@@ -133,9 +133,9 @@ case 'reset-password':
     <AuthView 
       key="auth" 
       initialMode={authMode === 'reset-otp' ? 'login' : authMode} // Fallback logic
-      authMode={authMode} // PASS THIS
-      setView={setView}   // PASS THIS
-      setAuthMode={setAuthMode} // PASS THIS
+      authMode={authMode} 
+      setView={setView}   
+      setAuthMode={setAuthMode} 
               onForgotPassword={(email: string) => { setPendingEmail(email); setView('otp'); }}
       onBack={() => setView('landing')} 
       onLogin={(userData) => {
