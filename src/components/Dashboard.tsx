@@ -97,7 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
       <main className="max-w-5xl mx-auto p-4 md:p-8 pt-6 md:pt-10">
         <header className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-1">Hi {user.name}</h2>
+            <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight mb-1">Hi {user.username?.toUpperCase()}!</h2>
             <p className="text-slate-500 dark:text-slate-400 font-medium">{t('ready_trans')}</p>
           </div>
           <div className="flex items-center gap-3 md:gap-4">
