@@ -23,13 +23,6 @@ const NETWORKS = [
   { id: '9mobile', name: '9Mobile', logo: '/ninemobileLogo.png' },
 ];
 
-// const networkLogos = {
-//   MTN: "mtnLogo.png",
-//   AIRTEL: "airtelLogo.png",
-//   GLO: "gloLogo.png",
-//   "9 MOBILE": "ninemobileLogo.png"
-// };
-
 const DATA_PLANS: Record<string, any[]> = {
   mtn: [
     { id: 'm1', name: '1.5GB Monthly', price: 1000, validity: '30 Days' },
@@ -504,7 +497,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ type, isOpen
             <div className="bg-orange-50 dark:bg-orange-950/20 p-5 rounded-3xl border border-orange-100 dark:border-orange-900/30 flex gap-4 shadow-sm">
                <Zap className="text-orange-500 shrink-0" size={24} />
                <p className="text-[10px] font-black text-orange-800 dark:text-orange-300 uppercase leading-relaxed">
-                 Airtime to Cash fee is 20%. Receive 6800 for every 61,000 sent. Funds settled instantly to wallet.
+                 Airtime to Cash fee is 20%. Receive 800 for every 1,000 sent. Funds settled instantly to wallet.
                </p>
             </div>
             <div className="space-y-4">

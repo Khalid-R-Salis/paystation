@@ -332,7 +332,7 @@ const HomeView = ({
                     </div>
                     <div>
                       <p className="font-black text-slate-900 dark:text-white text-base md:text-lg">{i % 2 === 0 ? t('serv_data') : t('serv_airtime')} {t('purchase')}</p>
-                      <p className="text-slate-400 font-medium text-xs md:text-sm">Oct {20+i}, 2023 \u2022 12:3{i} PM</p>
+                      <p className="text-slate-400 font-medium text-xs md:text-sm">Oct {20+i}, 2023 12:3{i} PM</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -457,7 +457,7 @@ const TransactionsView = () => {
                 </div>
                 <div>
                   <p className="font-black text-slate-900 dark:text-white text-base md:text-lg leading-tight uppercase">{tx.type}</p>
-                  <p className="text-slate-500 dark:text-slate-400 font-medium text-xs md:text-sm">TXID: {tx.id} \u2022 {tx.date}</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium text-xs md:text-sm">TXID: {tx.id} {tx.date}</p>
                 </div>
               </div>
               <div className="text-right">
