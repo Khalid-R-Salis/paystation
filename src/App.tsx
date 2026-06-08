@@ -13,6 +13,7 @@ import { User } from './types';
 import { supabase } from './lib/supabase';
 import { SecureStorage } from './lib/security';
 import NewPasswordView from './components/NewPasswordView';
+import { useInactivityLogout } from './hooks/useInactivityLogout';
 
 type ViewState = 'splash' | 'onboarding' | 'landing' | 'auth' | 'otp' | 'dashboard' | 'admin' | 'reset-password';
 
@@ -48,11 +49,25 @@ export default function App() {
     setView('landing');
   }, []);
 
-  // 3. App Initialization & Session Recovery
+  // 3. Auto Logout on Inactivity (15 minutes of no activity)
+  useInactivityLogout({
+    timeoutMinutes: 15,
+    onLogout: handleLogout,
+    enabled: !!user && (view === 'dashboard' || view === 'admin')  // Only active when user is logged in
+  });
+
+  // 4. App Initialization & Session Recovery
   useEffect(() => {
     const initApp = async () => {
-      // Small delay for Splash visibility
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      // Check if this is the first visit ever (splash has never been shown)
+      const hasSeenSplash = localStorage.getItem('hasSeenSplash');
+      const shouldShowSplash = !hasSeenSplash && view === 'splash';
+      
+      // Show splash only on first visit
+      if (shouldShowSplash) {
+        await new Promise(resolve => setTimeout(resolve, 2500));
+        localStorage.setItem('hasSeenSplash', 'true');
+      }
       
       const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
       const savedUser = SecureStorage.getItem('smrt_user_session');

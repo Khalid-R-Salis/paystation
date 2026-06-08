@@ -36,6 +36,7 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
   const [acceptedTC, setAcceptedTC] = useState(false);
   const [showForgotPw, setShowForgotPw] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
 
   // Form states
   const [fullName, setFullName] = useState('');
@@ -51,6 +52,20 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
   useEffect(() => {
     setIsLogin(initialMode === 'login');
   }, [initialMode]);
+
+  // Handle email error display
+  const handleEmailError = (errorMsg: string) => {
+    const msg = errorMsg.toLowerCase();
+    if (msg.includes('user already registered') || 
+        msg.includes('duplicate') || 
+        msg.includes('already exists') ||
+        msg.includes('email already in use') ||
+        msg.includes('user with this email')) {
+      setEmailError('This email is already registered. Please log in or use another email.');
+      return true;
+    }
+    return false;
+  };
 
 const handleForgotPassword = async (email: string) => {
   if (!email) {
@@ -101,6 +116,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   
   setLoading(true);
   const normalizedEmail = email.trim().toLowerCase();
+  setEmailError('');
 
   try {
     if (isLogin) {
@@ -158,20 +174,52 @@ const handleSubmit = async (e: React.FormEvent) => {
         return;
       }
 
-      const { data, error } = await supabase.auth.signUp({
-        email: normalizedEmail,
-        password,
-        options: {
-          data: {
-            full_name: fullName.trim(),
-            username: username.trim(),
-            phone: phone.trim()
-          },
-          emailRedirectTo: window.location.origin 
-        }
-      });
 
-      if (error) throw error;
+const { data: existingUsers, error: checkError } = await supabase
+  .from('profiles')
+  .select('email')
+  .eq('email', normalizedEmail);
+
+console.log("Checking email:", normalizedEmail);
+console.log("Existing users:", existingUsers);
+
+if (checkError) {
+  throw checkError;
+}
+
+if (existingUsers && existingUsers.length > 0) {
+  setEmailError(
+    'This email is already registered. Please login instead.'
+  );
+  setLoading(false);
+  return;
+}
+
+// Continue signup
+const { data, error } = await supabase.auth.signUp({
+  email: normalizedEmail,
+  password,
+
+ options: {
+  data: {
+    full_name: fullName.trim(),
+    username: username.trim(),
+    phone: phone.trim(),
+    email: normalizedEmail
+  },
+  emailRedirectTo: window.location.origin
+}
+});
+
+      if (error) {
+        // Check if error is duplicate email
+        if (handleEmailError(error.message || '')) {
+          setEmailError('This email is already registered. Please log in or use another email.');
+          setLoading(false);
+          return;
+        }
+        throw error;
+      }
 
       if (data?.user) {
         toast.success(t('success_signup') || "Verification code sent to your email!");
@@ -180,15 +228,18 @@ const handleSubmit = async (e: React.FormEvent) => {
       }
     }
   } catch (error: any) {
-    toast.error(handleAuthError(error));
+ 
+
+    toast.error(
+   handleEmailError(error.message || '')
+      ? 'Email already exists'
+      : handleAuthError(error)
+);
     // Reset loading so user can try again
     setLoading(false); 
   } finally {
-    // Only keep loading true if we are successfully transitioning pages
-    // Otherwise, reset it so the UI isn't stuck.
-    const isNavigating = !isLogin && email && !loading; 
-    if (!isNavigating) setLoading(false);
-  }
+   setLoading(false);
+}
 };
   
   return (
@@ -268,12 +319,25 @@ const handleSubmit = async (e: React.FormEvent) => {
                   <Input 
                     type="email" 
                     placeholder="name@example.com" 
-                    className="pl-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-xl focus:ring-[#084328]" 
+                    className={`pl-10 h-12 bg-slate-50 dark:bg-slate-800 rounded-xl focus:ring-[#084328] transition-colors ${
+                      emailError 
+                        ? 'border-red-500 dark:border-red-500 border-2 focus:border-red-500' 
+                        : 'border-slate-100 dark:border-slate-700'
+                    }`} 
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      // Clear email error when user starts editing
+                      if (emailError) {
+                        setEmailError('');
+                      }
+                    }}
                     required 
                   />
                 </div>
+                {emailError && !isLogin && (
+                  <p className="text-red-500 text-sm font-medium mt-1">{emailError}</p>
+                )}
               </div>
 
               {!isLogin && (
@@ -305,18 +369,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </button>
                   )}
                 </div>
-                {/* <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                  <Input 
-                    type="password" 
-                    placeholder="•••••••1" 
-                    className="pl-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-xl focus:ring-[#084328]" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required 
-                  />
-                </div> */}
-              
+
               <div className="relative">
   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
   <Input 
@@ -342,17 +395,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               {!isLogin && (
                 <div className="space-y-2">
                   <Label className="text-slate-700 dark:text-slate-200 font-bold ml-1">{t('auth_confirm_password')}</Label>
-                  {/* <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <Input 
-                      type="password" 
-                      placeholder="••••••••" 
-                      className="pl-10 h-12 bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 rounded-xl focus:ring-[#084328]" 
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required={!isLogin}
-                    />
-                  </div> */}
+                 
                
                <div className="relative">
   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -396,7 +439,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
               <Button 
                 type="submit" 
-                disabled={loading} 
+                disabled={loading}
                 className="w-full h-14 bg-[#084328] hover:bg-[#063a23] text-white text-lg font-bold rounded-2xl shadow-lg mt-4 transition-all active:scale-95 disabled:opacity-70"
               >
                 {loading ? "Processing..." : (isLogin ? t('auth_btn_login') : t('auth_btn_signup'))}
