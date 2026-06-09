@@ -84,6 +84,41 @@ export default function App() {
     initApp();
   }, []);
 
+  // 5. Supabase Realtime — sync profile changes across tabs/devices
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`profile:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          const p = payload.new as any;
+          const updated = {
+            ...user,
+            name: p.full_name,
+            phone: p.phone,
+            walletBalance: p.wallet_balance ?? user.walletBalance,
+            referralPoints: p.referral_points ?? user.referralPoints,
+            referralCode: p.referral_code ?? user.referralCode,
+          };
+          setUser(updated);
+          SecureStorage.setItem('smrt_user_session', updated);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
   // Prevent "Flash of Content" or Black Screens during initialization
   if (view === 'splash' && isInitializing) {
     return <SplashView />;
@@ -253,11 +288,22 @@ case 'otp':
                       toggleTheme={toggleTheme} 
                     />
                   ) : (
-                    <Dashboard 
+                    // <Dashboard 
+                    //   user={user} 
+                    //   onLogout={handleLogout} 
+                    //   isDarkMode={isDarkMode} 
+                    //   toggleTheme={toggleTheme} 
+                    // />
+                      <Dashboard 
                       user={user} 
                       onLogout={handleLogout} 
                       isDarkMode={isDarkMode} 
-                      toggleTheme={toggleTheme} 
+                      toggleTheme={toggleTheme}
+                      onUpdateUser={(updatedData: any) => {
+                        const merged = { ...user, ...updatedData };
+                        setUser(merged);
+                        SecureStorage.setItem('smrt_user_session', merged);
+                      }}
                     />
                   )}
                 </div>

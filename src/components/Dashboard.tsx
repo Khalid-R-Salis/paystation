@@ -42,9 +42,10 @@ interface DashboardProps {
   onLogout: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  onUpdateUser?: (updatedData: any) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggleTheme }) => {
+const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggleTheme, onUpdateUser }) => {
   const { t, setLanguage, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('home');
   const [activeService, setActiveService] = useState<string | null>(null);
@@ -191,7 +192,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, isDarkMode, toggl
         isOpen={showEditProfile} 
         onClose={() => setShowEditProfile(false)} 
         user={user} 
-        onUpdate={() => {}}
+        // onUpdate={() => {}}
+         onUpdate={(updatedData) => {
+    if (onUpdateUser) onUpdateUser(updatedData);
+  }}
       />
       <AgentUpgradeModal 
         isOpen={showAgentUpgrade} 
