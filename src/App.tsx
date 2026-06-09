@@ -14,6 +14,9 @@ import { supabase } from './lib/supabase';
 import { SecureStorage } from './lib/security';
 import NewPasswordView from './components/NewPasswordView';
 import { useInactivityLogout } from './hooks/useInactivityLogout';
+import { listenForSessionInvalidation, invalidateCurrentSession, clearSessionId } from './lib/sessionManager';
+import { clearDeviceId } from './lib/deviceManager';
+import { toast } from 'sonner';
 
 type ViewState = 'splash' | 'onboarding' | 'landing' | 'auth' | 'otp' | 'dashboard' | 'admin' | 'reset-password';
 
@@ -43,11 +46,17 @@ export default function App() {
 
   // 2. Optimized Logout
   const handleLogout = useCallback(async () => {
+    if (user?.id) {
+      // Invalidate session in database
+      await invalidateCurrentSession(user.id);
+    }
+    
     await supabase.auth.signOut();
     SecureStorage.removeItem('smrt_user_session');
+    clearSessionId();
     setUser(null);
     setView('landing');
-  }, []);
+  }, [user?.id]);
 
   // 3. Auto Logout on Inactivity (15 minutes of no activity)
   useInactivityLogout({
@@ -56,7 +65,27 @@ export default function App() {
     enabled: !!user && (view === 'dashboard' || view === 'admin')  // Only active when user is logged in
   });
 
-  // 4. App Initialization & Session Recovery
+  // 4. Session Invalidation Listener - Force logout if logged in elsewhere
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const unsubscribe = listenForSessionInvalidation(
+      user.id,
+      () => {
+        // User was logged in on another device - force logout
+        toast.error('Your account was accessed from another device. You have been logged out.');
+        handleLogout();
+      }
+    );
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [user?.id, handleLogout]);
+
+  // 5. App Initialization & Session Recovery
   useEffect(() => {
     const initApp = async () => {
       // Check if this is the first visit ever (splash has never been shown)
@@ -84,7 +113,7 @@ export default function App() {
     initApp();
   }, []);
 
-  // 5. Supabase Realtime — sync profile changes across tabs/devices
+  // 6. Supabase Realtime — sync profile changes across tabs/devices
   useEffect(() => {
     if (!user?.id) return;
 

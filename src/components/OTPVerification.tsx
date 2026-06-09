@@ -11,6 +11,7 @@ import { SecureStorage } from '@/lib/security';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from 'sonner';
 import { supabase, handleAuthError } from '../lib/supabase';
+import { createSessionRecord } from '../lib/sessionManager';
 
 interface OTPVerificationProps {
   email: string;
@@ -80,7 +81,20 @@ const handleVerify = async () => {
     });
 
     if (error) throw error;
-    onSuccess(data.user || data.session?.user || null);
+    
+    const user = data.user || data.session?.user;
+    
+    // Create session record for single-device login enforcement
+    if (user && authMode !== 'reset-otp') {
+      try {
+        await createSessionRecord(user.id);
+      } catch (sessionError) {
+        console.error('Failed to create session record:', sessionError);
+        // Continue anyway - session tracking is non-critical
+      }
+    }
+    
+    onSuccess(user);
     // onSuccess(data.session?.user);
   } catch (error: any) {
     toast.error("Invalid code. Please try again.");

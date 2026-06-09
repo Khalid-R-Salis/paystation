@@ -503,6 +503,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { supabase, handleAuthError } from '../lib/supabase';
 import { toast } from 'sonner';
+import { createSessionRecord } from '../lib/sessionManager';
 
 interface AuthViewProps {
   initialMode: 'login' | 'signup';
@@ -729,6 +730,14 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
           referralPoints: profile.referral_points || 0,
           referralCode: profile.referral_code || '',
         };
+        
+        // Create session record for single-device login enforcement
+        try {
+          await createSessionRecord(authData.user.id);
+        } catch (sessionError) {
+          console.error('Failed to create session record:', sessionError);
+          // Continue anyway - session tracking is non-critical
+        }
         
         toast.success(t('success_login') || 'Welcome back!');
         onLogin(userData);
