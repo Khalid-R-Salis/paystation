@@ -906,11 +906,12 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                       <Input
-                        placeholder="John Doe"
+                        placeholder="DANLAMI AUDU"
                         className={inputClass(!!fullNameError)}
                         value={fullName}
                         onChange={(e) => {
-                          setFullName(e.target.value);
+                          // setFullName(e.target.value);
+                          setFullName(e.target.value.toUpperCase());
                           if (fullNameError) setFullNameError('');
                           setFullNameValid(false);
                         }}
@@ -931,13 +932,39 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
                     </Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                      <Input
+                      {/* <Input
   placeholder="Khalid123"
   className={inputClass(!!usernameError, !fullNameValid)}
   value={username}
   disabled={!fullNameValid}
   onChange={(e) => {
     setUsername(e.target.value.toLowerCase());
+    if (usernameError) setUsernameError('');
+    setUsernameValid(false);
+  }}
+  onBlur={() => {
+    setUsernameTouched(true);
+    validateUsername(username);
+  }}
+  required={!isLogin}
+/> */}
+
+<Input
+  placeholder="Khalid123"
+  className={inputClass(!!usernameError, !fullNameValid)}
+  value={username}
+  disabled={!fullNameValid}
+  // This forces HTML5 validation for alphanumeric only
+  pattern="[a-zA-Z0-9]+"
+  // This prevents non-alphanumeric characters from being typed in most modern browsers
+  onKeyDown={(e) => {
+    if (/[^a-zA-Z0-9]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Tab') {
+      e.preventDefault();
+    }
+  }}
+  onChange={(e) => {
+    const sanitizedValue = e.target.value.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    setUsername(sanitizedValue);
     if (usernameError) setUsernameError('');
     setUsernameValid(false);
   }}
