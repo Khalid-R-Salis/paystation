@@ -932,28 +932,13 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
                     </Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                      {/* <Input
-  placeholder="Khalid123"
-  className={inputClass(!!usernameError, !fullNameValid)}
-  value={username}
-  disabled={!fullNameValid}
-  onChange={(e) => {
-    setUsername(e.target.value.toLowerCase());
-    if (usernameError) setUsernameError('');
-    setUsernameValid(false);
-  }}
-  onBlur={() => {
-    setUsernameTouched(true);
-    validateUsername(username);
-  }}
-  required={!isLogin}
-/> */}
 
 <Input
-  placeholder="Khalid123"
+  placeholder="Max 12 characters, no spaces"
   className={inputClass(!!usernameError, !fullNameValid)}
   value={username}
   disabled={!fullNameValid}
+  maxLength={12}
   // This forces HTML5 validation for alphanumeric only
   pattern="[a-zA-Z0-9]+"
   // This prevents non-alphanumeric characters from being typed in most modern browsers
@@ -963,7 +948,7 @@ const AuthView: React.FC<AuthViewProps> = ({ initialMode, onBack, onLogin, onSig
     }
   }}
   onChange={(e) => {
-    const sanitizedValue = e.target.value.replace(/[^a-z0-9]/gi, '').toLowerCase();
+    const sanitizedValue = e.target.value.replace(/[^a-z0-9]/gi, '').slice(0, 12).toLowerCase();
     setUsername(sanitizedValue);
     if (usernameError) setUsernameError('');
     setUsernameValid(false);

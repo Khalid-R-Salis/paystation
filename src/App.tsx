@@ -142,7 +142,7 @@ export default function App() {
 case 'reset-password':
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
-      <NewPasswordView 
+      {/* <NewPasswordView 
         email={pendingEmail} 
         onSuccess={(userData?: any) => {
           if (userData) {
@@ -153,7 +153,21 @@ case 'reset-password':
             setView('auth');
           }
         }}
-      />
+      /> */}
+      <NewPasswordView 
+  email={pendingEmail} 
+  setView={setView}
+  setAuthMode={setAuthMode}
+  onSuccess={(userData?: any) => {
+    if (userData) {
+      SecureStorage.setItem('smrt_user_session', userData);
+      setUser(userData);
+      setView(userData.role === 'admin' ? 'admin' : 'dashboard');
+    } else {
+      setView('auth');
+    }
+  }}
+/>
     </div>
   );
             case 'onboarding':
@@ -288,12 +302,7 @@ case 'otp':
                       toggleTheme={toggleTheme} 
                     />
                   ) : (
-                    // <Dashboard 
-                    //   user={user} 
-                    //   onLogout={handleLogout} 
-                    //   isDarkMode={isDarkMode} 
-                    //   toggleTheme={toggleTheme} 
-                    // />
+                   
                       <Dashboard 
                       user={user} 
                       onLogout={handleLogout} 
