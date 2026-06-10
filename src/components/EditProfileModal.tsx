@@ -431,7 +431,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
               <p className="text-xs font-black uppercase text-slate-400">
                 Security - Update Password
               </p>
-              <p className="text-[10px] text-slate-500 font-medium">
+              <p className="text-[15px] text-slate-500 font-medium">
                 Leave empty to skip
               </p>
             </div>
